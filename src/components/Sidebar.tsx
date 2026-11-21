@@ -51,7 +51,7 @@ export function Sidebar({
   onCloseMobile,
 }: SidebarProps) {
   const sidebarBody = (
-    <div className="flex h-full flex-col bg-[#0C2B7E] text-white select-none">
+    <div className="flex h-full flex-col overflow-y-auto scrollbar-navy bg-[#0C2B7E] text-white select-none">
       {/* Brand Header */}
       <div className="flex items-center justify-between px-5 pt-6 pb-7">
         <div className="flex items-center gap-3">
