@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 @theme {
+  --font-display: "Syne", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
@@ -21,6 +22,12 @@
 
   body {
     overflow-x: hidden;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-stretch: normal;
   }
 
   .tabular-nums {

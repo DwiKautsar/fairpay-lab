@@ -47,7 +47,7 @@ export function HomogenitasTab({ homogeneity, groupColumnLabel }: HomogenitasTab
         <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
           UJI 02 · LEVENE
         </div>
-        <h1 className="mt-2 text-[28px] sm:text-[33px] font-bold tracking-[-0.018em] leading-[1.15] text-[#0B1221] [text-wrap:balance]">
+        <h1 className="mt-2 text-[25px] sm:text-[31px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]">
           Apakah rentang upah antarkelompok setara?
         </h1>
         <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">

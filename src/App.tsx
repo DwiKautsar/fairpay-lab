@@ -16,6 +16,7 @@ import {
 import { exportAuditReportXlsx } from './lib/excel';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
+import { EmptyStateView } from './components/EmptyStateView';
 import { FilterModal } from './components/FilterModal';
 import { RawDataModal } from './components/RawDataModal';
 import { UploadModal } from './components/UploadModal';
@@ -24,18 +25,28 @@ import { NormalitasTab } from './components/tabs/NormalitasTab';
 import { HomogenitasTab } from './components/tabs/HomogenitasTab';
 import { LinearitasSimulasiTab } from './components/tabs/LinearitasSimulasiTab';
 
+const EMPTY_MAPPING: ColumnMapping = {
+  salaryCol: '',
+  groupCol: '',
+  experienceCol: '',
+  departmentCol: '',
+};
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('ringkasan');
-  const [datasetKey, setDatasetKey] = useState<DatasetKey>('glassdoor');
+  // Start with no dataset selected so the initial screen shows a clean empty state
+  const [datasetKey, setDatasetKey] = useState<DatasetKey>('none');
   const [customDataset, setCustomDataset] = useState<DatasetBundle | null>(null);
 
-  const activeDataset: DatasetBundle = useMemo(() => {
+  const activeDataset: DatasetBundle | null = useMemo(() => {
+    if (datasetKey === 'none') return null;
     if (datasetKey === 'custom' && customDataset) return customDataset;
     if (datasetKey === 'employee_salary') return BUILTIN_DATASETS.employee_salary;
-    return BUILTIN_DATASETS.glassdoor;
+    if (datasetKey === 'glassdoor') return BUILTIN_DATASETS.glassdoor;
+    return null;
   }, [datasetKey, customDataset]);
 
-  const [mapping, setMapping] = useState<ColumnMapping>(activeDataset.defaultMapping);
+  const [mapping, setMapping] = useState<ColumnMapping>(EMPTY_MAPPING);
   const [filters, setFilters] = useState<ActiveFilters>({ departments: [], groups: [] });
 
   // Interactive test & simulation states
@@ -61,6 +72,13 @@ export default function App() {
   // Sync column mapping and reset filters whenever dataset switches
   const handleSelectDataset = (nextKey: DatasetKey) => {
     setDatasetKey(nextKey);
+    if (nextKey === 'none') {
+      setMapping(EMPTY_MAPPING);
+      setFilters({ departments: [], groups: [] });
+      setLogTransform(false);
+      setPythonVerifiedStats(null);
+      return;
+    }
     const target =
       nextKey === 'custom' && customDataset
         ? customDataset
@@ -82,36 +100,42 @@ export default function App() {
 
   // Unique values for Filter modal
   const availableDepartments = useMemo(() => {
+    if (!activeDataset) return [];
     const set = new Set<string>();
     for (const row of activeDataset.rows) {
       const v = String(row[mapping.departmentCol] ?? '').trim();
       if (v) set.add(v);
     }
     return [...set].sort();
-  }, [activeDataset.rows, mapping.departmentCol]);
+  }, [activeDataset, mapping.departmentCol]);
 
   const availableGroups = useMemo(() => {
+    if (!activeDataset) return [];
     const set = new Set<string>();
     for (const row of activeDataset.rows) {
       const v = String(row[mapping.groupCol] ?? '').trim();
       if (v) set.add(v);
     }
     return [...set].sort();
-  }, [activeDataset.rows, mapping.groupCol]);
+  }, [activeDataset, mapping.groupCol]);
 
   // Cleaned records & instant analysis
-  const cleaned = useMemo(
-    () => extractCleanedRecords(activeDataset.rows, mapping, filters),
-    [activeDataset.rows, mapping, filters]
-  );
+  const cleaned = useMemo(() => {
+    if (!activeDataset) return { records: [], totalFilteredRaw: 0, droppedRows: 0 };
+    return extractCleanedRecords(activeDataset.rows, mapping, filters);
+  }, [activeDataset, mapping, filters]);
 
-  const localAnalysis = useMemo(
-    () => runFullAnalysis(activeDataset.rows, mapping, filters),
-    [activeDataset.rows, mapping, filters]
-  );
+  const localAnalysis = useMemo(() => {
+    if (!activeDataset) return null;
+    return runFullAnalysis(activeDataset.rows, mapping, filters);
+  }, [activeDataset, mapping, filters]);
 
   // Call Python /api/analyze backend when dataset/mapping/filters change
   useEffect(() => {
+    if (!activeDataset) {
+      setPythonVerifiedStats(null);
+      return;
+    }
     let cancelled = false;
     const salaries = cleaned.records.slice(0, 5000).map((r) => r.salary);
     const groups = cleaned.records.slice(0, 5000).map((r) => r.group);
@@ -138,10 +162,11 @@ export default function App() {
     return () => {
       cancelled = true;
     };
-  }, [cleaned.records]);
+  }, [activeDataset, cleaned.records]);
 
   // Merge Python-verified test statistics into analysis bundle seamlessly
   const analysis = useMemo(() => {
+    if (!localAnalysis) return null;
     if (!pythonVerifiedStats) return localAnalysis;
     return {
       ...localAnalysis,
@@ -174,20 +199,21 @@ export default function App() {
   }, [localAnalysis, pythonVerifiedStats]);
 
   // Real-time policy simulation (in-memory copy)
-  const simulation = useMemo(
-    () => runPolicySimulation(activeDataset.rows, mapping, filters, subsidyPct, loyaltyPct),
-    [activeDataset.rows, mapping, filters, subsidyPct, loyaltyPct]
-  );
+  const simulation = useMemo(() => {
+    if (!activeDataset) return null;
+    return runPolicySimulation(activeDataset.rows, mapping, filters, subsidyPct, loyaltyPct);
+  }, [activeDataset, mapping, filters, subsidyPct, loyaltyPct]);
 
   // Candidate fair salary prediction
-  const candidateOffer = useMemo(
-    () => predictCandidateOffer(analysis.linearity, candidateYears),
-    [analysis.linearity, candidateYears]
-  );
+  const candidateOffer = useMemo(() => {
+    if (!analysis) return null;
+    return predictCandidateOffer(analysis.linearity, candidateYears);
+  }, [analysis, candidateYears]);
 
   const activeFilterCount = filters.departments.length + filters.groups.length;
 
   const handleExportReport = () => {
+    if (!activeDataset || !analysis || !simulation || !candidateOffer) return;
     exportAuditReportXlsx({
       datasetName: activeDataset.name,
       mapping,
@@ -211,8 +237,8 @@ export default function App() {
         customDataset={customDataset}
         onSelectDataset={handleSelectDataset}
         onOpenUpload={() => setUploadModalOpen(true)}
-        validRowCount={analysis.kpi.validRows}
-        columnCount={activeDataset.columns.length}
+        validRowCount={analysis?.kpi.validRows ?? 0}
+        columnCount={activeDataset?.columns.length ?? 0}
         mobileOpen={mobileMenuOpen}
         onCloseMobile={() => setMobileMenuOpen(false)}
       />
@@ -220,7 +246,8 @@ export default function App() {
       {/* Right Main Workspace */}
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar
-          datasetName={activeDataset.name}
+          datasetName={activeDataset?.name ?? null}
+          hasDataset={Boolean(activeDataset)}
           activeFilterCount={activeFilterCount}
           onOpenMobileMenu={() => setMobileMenuOpen(true)}
           onOpenFilter={() => setFilterModalOpen(true)}
@@ -228,78 +255,92 @@ export default function App() {
         />
 
         <main className="mx-auto w-full max-w-[1160px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-10 lg:py-6">
-          {activeTab === 'ringkasan' && (
-            <RingkasanTab
-              analysis={analysis}
-              periodLabel={activeDataset.periodLabel}
-              departmentLabel={mapping.departmentCol}
-              groupLabel={mapping.groupCol}
-              onNavigateTab={setActiveTab}
-              onOpenRawData={() => setRawDataModalOpen(true)}
+          {!activeDataset || !analysis || !simulation || !candidateOffer ? (
+            <EmptyStateView
+              activeTab={activeTab}
+              onSelectDataset={handleSelectDataset}
+              onOpenUpload={() => setUploadModalOpen(true)}
             />
-          )}
+          ) : (
+            <>
+              {activeTab === 'ringkasan' && (
+                <RingkasanTab
+                  analysis={analysis}
+                  periodLabel={activeDataset.periodLabel}
+                  departmentLabel={mapping.departmentCol}
+                  groupLabel={mapping.groupCol}
+                  onNavigateTab={setActiveTab}
+                  onOpenRawData={() => setRawDataModalOpen(true)}
+                />
+              )}
 
-          {activeTab === 'normalitas' && (
-            <NormalitasTab
-              normalityRaw={analysis.normalityRaw}
-              normalityLog={analysis.normalityLog}
-              logTransform={logTransform}
-              onToggleLogTransform={() => setLogTransform((prev) => !prev)}
-            />
-          )}
+              {activeTab === 'normalitas' && (
+                <NormalitasTab
+                  normalityRaw={analysis.normalityRaw}
+                  normalityLog={analysis.normalityLog}
+                  logTransform={logTransform}
+                  onToggleLogTransform={() => setLogTransform((prev) => !prev)}
+                />
+              )}
 
-          {activeTab === 'homogenitas' && (
-            <HomogenitasTab
-              homogeneity={analysis.homogeneity}
-              groupColumnLabel={mapping.groupCol}
-            />
-          )}
+              {activeTab === 'homogenitas' && (
+                <HomogenitasTab
+                  homogeneity={analysis.homogeneity}
+                  groupColumnLabel={mapping.groupCol}
+                />
+              )}
 
-          {activeTab === 'linearitas' && (
-            <LinearitasSimulasiTab
-              subsidyPct={subsidyPct}
-              loyaltyPct={loyaltyPct}
-              onChangeSubsidy={setSubsidyPct}
-              onChangeLoyalty={setLoyaltyPct}
-              onResetSimulation={() => {
-                setSubsidyPct(0);
-                setLoyaltyPct(0);
-              }}
-              simulation={simulation}
-              linearity={analysis.linearity}
-              candidateYears={candidateYears}
-              onChangeCandidateYears={setCandidateYears}
-              candidateOffer={candidateOffer}
-              experienceLabel={mapping.experienceCol}
-            />
+              {activeTab === 'linearitas' && (
+                <LinearitasSimulasiTab
+                  subsidyPct={subsidyPct}
+                  loyaltyPct={loyaltyPct}
+                  onChangeSubsidy={setSubsidyPct}
+                  onChangeLoyalty={setLoyaltyPct}
+                  onResetSimulation={() => {
+                    setSubsidyPct(0);
+                    setLoyaltyPct(0);
+                  }}
+                  simulation={simulation}
+                  linearity={analysis.linearity}
+                  candidateYears={candidateYears}
+                  onChangeCandidateYears={setCandidateYears}
+                  candidateOffer={candidateOffer}
+                  experienceLabel={mapping.experienceCol}
+                />
+              )}
+            </>
           )}
         </main>
       </div>
 
       {/* Interactive Modals */}
-      <FilterModal
-        open={filterModalOpen}
-        onClose={() => setFilterModalOpen(false)}
-        columns={activeDataset.columns}
-        mapping={mapping}
-        onChangeMapping={setMapping}
-        availableDepartments={availableDepartments}
-        availableGroups={availableGroups}
-        filters={filters}
-        onChangeFilters={setFilters}
-        onResetAll={() => {
-          setMapping(activeDataset.defaultMapping);
-          setFilters({ departments: [], groups: [] });
-        }}
-      />
+      {activeDataset && (
+        <>
+          <FilterModal
+            open={filterModalOpen}
+            onClose={() => setFilterModalOpen(false)}
+            columns={activeDataset.columns}
+            mapping={mapping}
+            onChangeMapping={setMapping}
+            availableDepartments={availableDepartments}
+            availableGroups={availableGroups}
+            filters={filters}
+            onChangeFilters={setFilters}
+            onResetAll={() => {
+              setMapping(activeDataset.defaultMapping);
+              setFilters({ departments: [], groups: [] });
+            }}
+          />
 
-      <RawDataModal
-        open={rawDataModalOpen}
-        onClose={() => setRawDataModalOpen(false)}
-        datasetName={activeDataset.name}
-        columns={activeDataset.columns}
-        rows={cleaned.records.map((r) => r.raw)}
-      />
+          <RawDataModal
+            open={rawDataModalOpen}
+            onClose={() => setRawDataModalOpen(false)}
+            datasetName={activeDataset.name}
+            columns={activeDataset.columns}
+            rows={cleaned.records.map((r) => r.raw)}
+          />
+        </>
+      )}
 
       <UploadModal
         open={uploadModalOpen}

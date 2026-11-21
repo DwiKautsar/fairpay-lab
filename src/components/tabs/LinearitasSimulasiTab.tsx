@@ -88,7 +88,7 @@ export function LinearitasSimulasiTab({
           <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
             UJI 03 · LABORATORIUM KEBIJAKAN
           </div>
-          <h1 className="mt-2 text-[28px] sm:text-[33px] font-bold tracking-[-0.018em] leading-[1.15] text-[#0B1221] [text-wrap:balance]">
+          <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]">
             Uji kebijakan sebelum diterapkan.
           </h1>
           <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">

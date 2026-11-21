@@ -1,7 +1,8 @@
 import { Download, Filter, Menu } from 'lucide-react';
 
 interface TopBarProps {
-  datasetName: string;
+  datasetName: string | null;
+  hasDataset: boolean;
   activeFilterCount: number;
   onOpenMobileMenu: () => void;
   onOpenFilter: () => void;
@@ -10,6 +11,7 @@ interface TopBarProps {
 
 export function TopBar({
   datasetName,
+  hasDataset,
   activeFilterCount,
   onOpenMobileMenu,
   onOpenFilter,
@@ -33,7 +35,13 @@ export function TopBar({
           <span className="text-[#CBD5E1]" aria-hidden="true">
             /
           </span>
-          <span className="font-semibold text-[#1E293B] truncate">{datasetName}</span>
+          <span
+            className={`truncate ${
+              datasetName ? 'font-semibold text-[#1E293B]' : 'font-medium text-[#94A3B8]'
+            }`}
+          >
+            {datasetName ?? 'Belum ada dataset'}
+          </span>
         </div>
       </div>
 
@@ -41,9 +49,10 @@ export function TopBar({
       <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
         <button
           type="button"
+          disabled={!hasDataset}
           onClick={onOpenFilter}
           aria-label={`Filter dan pemetaan kolom${activeFilterCount > 0 ? ` (${activeFilterCount} aktif)` : ''}`}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#F3F5F9] px-3.5 py-2.5 text-[13px] font-medium text-[#334155] transition-colors hover:bg-[#E8ECF4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] whitespace-nowrap shrink-0 cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#F3F5F9] px-3.5 py-2.5 text-[13px] font-medium text-[#334155] transition-colors hover:bg-[#E8ECF4] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed disabled:hover:bg-[#F3F5F9]"
         >
           <Filter className="h-4 w-4 text-[#475569]" />
           <span className="hidden sm:inline">Filter</span>
@@ -54,8 +63,9 @@ export function TopBar({
 
         <button
           type="button"
+          disabled={!hasDataset}
           onClick={onExportReport}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#1562FF] px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_2px_10px_rgba(21,98,255,0.22)] transition-all hover:bg-[#0E51DB] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2 whitespace-nowrap shrink-0 cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-xl bg-[#1562FF] px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_2px_10px_rgba(21,98,255,0.22)] transition-all hover:bg-[#0E51DB] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2 whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-45 disabled:shadow-none disabled:cursor-not-allowed disabled:hover:bg-[#1562FF]"
         >
           <Download className="h-4 w-4" />
           <span>Ekspor laporan</span>

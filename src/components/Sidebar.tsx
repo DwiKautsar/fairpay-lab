@@ -1,5 +1,6 @@
 import {
   ChevronDown,
+  CircleDashed,
   LayoutGrid,
   Scale,
   ShieldCheck,
@@ -15,7 +16,7 @@ import { BrandLogo } from './BrandLogo';
 interface SidebarProps {
   activeTab: TabId;
   onSelectTab: (tab: TabId) => void;
-  activeDataset: DatasetBundle;
+  activeDataset: DatasetBundle | null;
   customDataset: DatasetBundle | null;
   onSelectDataset: (key: DatasetKey) => void;
   onOpenUpload: () => void;
@@ -54,12 +55,12 @@ export function Sidebar({
       {/* Brand Header */}
       <div className="flex items-center justify-between px-5 pt-6 pb-7">
         <div className="flex items-center gap-3">
-          <BrandLogo className="h-8 w-8 text-white shrink-0" />
+          <BrandLogo className="w-[38px] h-[30px] text-white shrink-0" />
           <div className="min-w-0">
-            <div className="text-[19px] font-bold tracking-tight leading-tight text-white">
+            <div className="font-display text-[19px] font-bold tracking-tight leading-tight text-white">
               FairPay
             </div>
-            <div className="text-[10px] font-medium tracking-[0.14em] text-[#95ACE0] uppercase mt-0.5">
+            <div className="font-mono text-[9.5px] font-medium tracking-[0.14em] text-[#95ACE0] uppercase mt-0.5">
               HR EQUITY AUDITOR
             </div>
           </div>
@@ -142,10 +143,13 @@ export function Sidebar({
           <div className="relative">
             <select
               id="dataset-selector"
-              value={activeDataset.key}
+              value={activeDataset ? activeDataset.key : 'none'}
               onChange={(e) => onSelectDataset(e.target.value as DatasetKey)}
               className="w-full appearance-none rounded-xl border border-white/15 bg-[#153996]/90 px-3.5 py-2.5 pr-9 text-[13px] font-medium text-white transition-colors hover:bg-[#1A42AA] focus:border-[#60A5FA] focus:outline-none cursor-pointer"
             >
+              <option value="none" className="bg-[#0C2B7E] text-[#A7BCE8]">
+                Pilih dataset...
+              </option>
               <option value="glassdoor" className="bg-[#0C2B7E] text-white">
                 Glassdoor Pay Gap
               </option>
@@ -171,24 +175,38 @@ export function Sidebar({
             onOpenUpload();
             onCloseMobile();
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/25 bg-white/[0.03] px-3 py-2.5 text-[13px] font-medium text-[#DCE5FA] transition-colors hover:border-white/45 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-white/25 bg-white/[0.03] px-3 py-2.5 text-[13px] font-medium text-[#DCE5FA] transition-colors hover:border-white/45 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 cursor-pointer"
         >
           <Upload className="h-4 w-4 shrink-0" />
           <span className="whitespace-nowrap">Unggah CSV / Excel</span>
         </button>
 
-        {/* Dataset Ready Status */}
-        <div className="flex items-start gap-2.5 pt-1">
-          <ShieldCheck className="h-[17px] w-[17px] shrink-0 text-[#34D399] mt-0.5" />
-          <div className="min-w-0">
-            <div className="text-[12.5px] font-semibold text-[#34D399] leading-tight">
-              Data siap dianalisis
-            </div>
-            <div className="mt-0.5 text-[11.5px] text-[#9BB0E0] tabular-nums">
-              {formatIntegerId(validRowCount)} baris · {columnCount} kolom
+        {/* Dataset Status */}
+        {activeDataset ? (
+          <div className="flex items-start gap-2.5 pt-1">
+            <ShieldCheck className="h-[17px] w-[17px] shrink-0 text-[#34D399] mt-0.5" />
+            <div className="min-w-0">
+              <div className="text-[12.5px] font-semibold text-[#34D399] leading-tight">
+                Data siap dianalisis
+              </div>
+              <div className="mt-0.5 text-[11.5px] text-[#9BB0E0] tabular-nums">
+                {formatIntegerId(validRowCount)} baris · {columnCount} kolom
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-start gap-2.5 pt-1">
+            <CircleDashed className="h-[17px] w-[17px] shrink-0 text-[#9BB0E0] mt-0.5" />
+            <div className="min-w-0">
+              <div className="text-[12.5px] font-semibold text-[#CBD9F7] leading-tight">
+                Belum ada dataset
+              </div>
+              <div className="mt-0.5 text-[11.5px] text-[#8FA6DA]">
+                Pilih atau unggah file data
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Academic Footer */}

@@ -1,6 +1,6 @@
 export type TabId = 'ringkasan' | 'normalitas' | 'homogenitas' | 'linearitas';
 
-export type DatasetKey = 'glassdoor' | 'employee_salary' | 'custom';
+export type DatasetKey = 'none' | 'glassdoor' | 'employee_salary' | 'custom';
 
 export interface DataRow {
   [key: string]: string | number | null | undefined;
