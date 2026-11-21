@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import type {
   ActiveFilters,
   ColumnMapping,
@@ -16,6 +17,8 @@ import {
 import { exportAuditReportXlsx } from './lib/excel';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
+import { SplashScreen } from './components/SplashScreen';
+import { TabLoadingView } from './components/TabLoadingView';
 import { EmptyStateView } from './components/EmptyStateView';
 import { FilterModal } from './components/FilterModal';
 import { RawDataModal } from './components/RawDataModal';
@@ -33,10 +36,44 @@ const EMPTY_MAPPING: ColumnMapping = {
 };
 
 export default function App() {
+  const [showSplash, setShowSplash] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>('ringkasan');
+  const [isTabLoading, setIsTabLoading] = useState(false);
+  const tabLoadingTimerRef = useRef<number | null>(null);
   // Start with no dataset selected so the initial screen shows a clean empty state
   const [datasetKey, setDatasetKey] = useState<DatasetKey>('none');
   const [customDataset, setCustomDataset] = useState<DatasetBundle | null>(null);
+
+  const handleSplashComplete = useCallback(() => {
+    setShowSplash(false);
+  }, []);
+
+  const handleSelectTab = useCallback(
+    (nextTab: TabId) => {
+      if (nextTab === activeTab) return;
+      if (tabLoadingTimerRef.current !== null) {
+        window.clearTimeout(tabLoadingTimerRef.current);
+      }
+      setActiveTab(nextTab);
+      setIsTabLoading(true);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+      tabLoadingTimerRef.current = window.setTimeout(() => {
+        setIsTabLoading(false);
+        tabLoadingTimerRef.current = null;
+      }, 380);
+    },
+    [activeTab]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (tabLoadingTimerRef.current !== null) {
+        window.clearTimeout(tabLoadingTimerRef.current);
+      }
+    };
+  }, []);
 
   const activeDataset: DatasetBundle | null = useMemo(() => {
     if (datasetKey === 'none') return null;
@@ -229,10 +266,13 @@ export default function App() {
 
   return (
     <div className="flex min-h-screen bg-white text-[#0F172A]">
+      {/* Branded Entrance Splash Screen */}
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+
       {/* Left Navigation Sidebar */}
       <Sidebar
         activeTab={activeTab}
-        onSelectTab={setActiveTab}
+        onSelectTab={handleSelectTab}
         activeDataset={activeDataset}
         customDataset={customDataset}
         onSelectDataset={handleSelectDataset}
@@ -245,31 +285,60 @@ export default function App() {
 
       {/* Right Main Workspace */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <TopBar
-          datasetName={activeDataset?.name ?? null}
-          hasDataset={Boolean(activeDataset)}
-          activeFilterCount={activeFilterCount}
-          onOpenMobileMenu={() => setMobileMenuOpen(true)}
-          onOpenFilter={() => setFilterModalOpen(true)}
-          onExportReport={handleExportReport}
-        />
+        <div className="relative">
+          <TopBar
+            datasetName={activeDataset?.name ?? null}
+            hasDataset={Boolean(activeDataset)}
+            activeFilterCount={activeFilterCount}
+            onOpenMobileMenu={() => setMobileMenuOpen(true)}
+            onOpenFilter={() => setFilterModalOpen(true)}
+            onExportReport={handleExportReport}
+          />
+          {isTabLoading && (
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-[2.5px] overflow-hidden bg-[#E8F0FF]"
+            >
+              <motion.div
+                initial={{ x: '-100%' }}
+                animate={{ x: '100%' }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                className="h-full w-2/3 rounded-full bg-gradient-to-r from-[#0C2B7E] via-[#1562FF] to-[#60A5FA]"
+              />
+            </div>
+          )}
+        </div>
 
         <main className="mx-auto w-full max-w-[1160px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-10 lg:py-6">
-          {!activeDataset || !analysis || !simulation || !candidateOffer ? (
-            <EmptyStateView
-              activeTab={activeTab}
-              onSelectDataset={handleSelectDataset}
-              onOpenUpload={() => setUploadModalOpen(true)}
-            />
+          {isTabLoading ? (
+            <TabLoadingView targetTab={activeTab} />
+          ) : !activeDataset || !analysis || !simulation || !candidateOffer ? (
+            <motion.div
+              key={`empty-${activeTab}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <EmptyStateView
+                activeTab={activeTab}
+                onSelectDataset={handleSelectDataset}
+                onOpenUpload={() => setUploadModalOpen(true)}
+              />
+            </motion.div>
           ) : (
-            <>
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            >
               {activeTab === 'ringkasan' && (
                 <RingkasanTab
                   analysis={analysis}
                   periodLabel={activeDataset.periodLabel}
                   departmentLabel={mapping.departmentCol}
                   groupLabel={mapping.groupCol}
-                  onNavigateTab={setActiveTab}
+                  onNavigateTab={handleSelectTab}
                   onOpenRawData={() => setRawDataModalOpen(true)}
                 />
               )}
@@ -308,7 +377,7 @@ export default function App() {
                   experienceLabel={mapping.experienceCol}
                 />
               )}
-            </>
+            </motion.div>
           )}
         </main>
       </div>
