@@ -1,0 +1,6 @@
+{
+  "name": "FairPay — HR Equity Auditor",
+  "description": "Aplikasi audit keadilan gaji dan simulator interaktif penyesuaian kompensasi menggunakan Uji Normalitas Shapiro-Wilk, Uji Homogenitas Levene, dan Uji Linearitas Regresi.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
