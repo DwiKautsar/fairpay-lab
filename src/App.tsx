@@ -285,7 +285,7 @@ export default function App() {
 
       {/* Right Main Workspace */}
       <div className="flex min-w-0 flex-1 flex-col">
-        <div className="relative">
+        <div className="sticky top-0 z-30 w-full">
           <TopBar
             datasetName={activeDataset?.name ?? null}
             hasDataset={Boolean(activeDataset)}

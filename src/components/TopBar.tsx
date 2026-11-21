@@ -18,7 +18,7 @@ export function TopBar({
   onExportReport,
 }: TopBarProps) {
   return (
-    <header className="sticky top-0 z-30 flex h-[68px] items-center justify-between gap-4 border-b border-[#EEF0F5] bg-white/95 px-4 backdrop-blur-sm sm:px-6 lg:px-10">
+    <header className="flex h-[68px] w-full items-center justify-between gap-4 border-b border-[#EEF0F5] bg-white/95 px-4 backdrop-blur-md shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:px-6 lg:px-10">
       {/* Left: Mobile Hamburger + Desktop Breadcrumb */}
       <div className="flex items-center gap-3 min-w-0">
         <button
