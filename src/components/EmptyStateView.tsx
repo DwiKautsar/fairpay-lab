@@ -1,4 +1,4 @@
-import { ArrowRight, Database, FileSpreadsheet, Upload } from 'lucide-react';
+import { ArrowRight, Database, FileSpreadsheet, Sparkles, Upload } from 'lucide-react';
 import type { DatasetKey, TabId } from '../types/fairpay';
 import { downloadExcelTemplate } from '../lib/excel';
 
@@ -65,8 +65,10 @@ export function EmptyStateView({
             Mulai audit keadilan kompensasi
           </h2>
           <p className="mt-2 text-[13.5px] text-[#64748B] leading-relaxed">
-            Unggah data penggajian perusahaan Anda dalam format <span className="font-mono text-[#334155]">.csv</span> atau{' '}
-            <span className="font-mono text-[#334155]">.xlsx</span>, atau pilih dataset contoh di bawah untuk langsung mencoba seluruh fitur.
+            Unggah data penggajian perusahaan Anda dalam format{' '}
+            <span className="font-mono text-[#334155]">.csv</span> atau{' '}
+            <span className="font-mono text-[#334155]">.xlsx</span>, atau pilih dataset contoh di
+            bawah untuk langsung mencoba seluruh fitur.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -80,71 +82,98 @@ export function EmptyStateView({
             </button>
             <button
               type="button"
-              onClick={downloadExcelTemplate}
+              onClick={() => void downloadExcelTemplate()}
               className="inline-flex items-center gap-2 rounded-xl border border-[#D5DCE8] bg-white px-4 py-2.5 text-[13.5px] font-medium text-[#334155] transition-colors hover:bg-[#F3F5F9] hover:text-[#0F172A] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
             >
               <FileSpreadsheet className="h-4 w-4 text-[#0F9D78]" />
-              <span>Unduh Template Excel</span>
+              <span>Unduh Template Excel (9 Kolom)</span>
             </button>
           </div>
         </div>
       </section>
 
-      {/* Instant Built-In Dataset Starters (PRD Section 4.1) */}
+      {/* Instant Built-In Dataset Starters — High-Contrast FairPay Blue Dominance */}
       <section aria-label="Dataset riil bawaan">
-        <div className="mb-3.5 font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#64748B] uppercase">
-          ATAU GUNAKAN DATASET RIIL BAWAAN
+        <div className="mb-3.5 flex items-center gap-2 font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#0C2B7E] uppercase">
+          <Sparkles className="h-3.5 w-3.5 text-[#1562FF]" />
+          <span>ATAU MULAI INSTAN DENGAN DATASET RIIL BAWAAN</span>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* Card 1: Deep FairPay Navy -> Royal Blue */}
           <button
             type="button"
             onClick={() => onSelectDataset('glassdoor')}
-            className="group flex flex-col justify-between rounded-2xl border border-[#E7ECF4] bg-white p-5 text-left transition-all hover:border-[#1562FF]/50 hover:shadow-[0_4px_20px_rgba(21,98,255,0.08)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1E40AF]/40 bg-gradient-to-br from-[#0C2B7E] via-[#1139A3] to-[#155AE8] p-6 text-left text-white shadow-[0_12px_28px_rgba(12,43,126,0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(21,98,255,0.3)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2"
           >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-[11px] font-medium text-[#1562FF]">
+            {/* Subtle decorative arc */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full border-[18px] border-white/[0.08] transition-transform duration-300 group-hover:scale-110"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -bottom-12 right-8 h-28 w-28 rounded-full bg-[#60A5FA]/20 blur-2xl"
+            />
+
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-[10.5px] font-semibold tracking-[0.08em] text-[#BFDBFE] uppercase">
                   Kaggle Public Dataset
                 </span>
-                <span className="font-mono text-[11px] text-[#94A3B8] tabular-nums">
+                <span className="rounded-lg bg-white/14 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white backdrop-blur-xs tabular-nums">
                   1.000 baris · 9 kolom
                 </span>
               </div>
-              <h2 className="mt-2 text-[17px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
+              <h2 className="mt-3 text-[19px] font-bold tracking-tight text-white">
                 Glassdoor Gender Pay Gap
               </h2>
-              <p className="mt-1.5 text-[13px] text-[#64748B] leading-relaxed">
-                Struktur gaji pokok 5 divisi dengan perbandingan gender dan pengalaman kerja.
+              <p className="mt-1.5 text-[13.5px] text-[#DBEAFE]/90 leading-relaxed">
+                Struktur gaji pokok 5 divisi dengan perbandingan gender, pendidikan, kinerja, dan
+                pengalaman kerja.
               </p>
             </div>
-            <div className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#1562FF]">
+
+            <div className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-xl bg-white px-4 py-2 text-[13px] font-bold text-[#0C2B7E] shadow-xs transition-all group-hover:bg-[#EFF6FF]">
               <span>Muat dataset ini</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </div>
           </button>
 
+          {/* Card 2: Vibrant FairPay Electric Blue -> Cobalt */}
           <button
             type="button"
             onClick={() => onSelectDataset('employee_salary')}
-            className="group flex flex-col justify-between rounded-2xl border border-[#E7ECF4] bg-white p-5 text-left transition-all hover:border-[#1562FF]/50 hover:shadow-[0_4px_20px_rgba(21,98,255,0.08)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
+            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#3B82F6]/45 bg-gradient-to-br from-[#1562FF] via-[#1351D8] to-[#0B3496] p-6 text-left text-white shadow-[0_12px_28px_rgba(21,98,255,0.22)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_36px_rgba(21,98,255,0.34)] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2"
           >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-[11px] font-medium text-[#1562FF]">
+            {/* Subtle decorative ring */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-12 -bottom-12 h-40 w-40 rounded-full border-[18px] border-white/[0.09] transition-transform duration-300 group-hover:scale-110"
+            />
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -top-10 left-1/2 h-28 w-28 rounded-full bg-[#93C5FD]/22 blur-2xl"
+            />
+
+            <div className="relative z-10">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="font-mono text-[10.5px] font-semibold tracking-[0.08em] text-[#DBEAFE] uppercase">
                   Kaggle Public Dataset
                 </span>
-                <span className="font-mono text-[11px] text-[#94A3B8] tabular-nums">
+                <span className="rounded-lg bg-white/16 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white backdrop-blur-xs tabular-nums">
                   375 baris · 6 kolom
                 </span>
               </div>
-              <h2 className="mt-2 text-[17px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
+              <h2 className="mt-3 text-[19px] font-bold tracking-tight text-white">
                 Employee Salary &amp; Experience
               </h2>
-              <p className="mt-1.5 text-[13px] text-[#64748B] leading-relaxed">
-                Data gaji tahunan lintas tingkat pendidikan (Bachelor, Master, PhD) dan masa kerja.
+              <p className="mt-1.5 text-[13.5px] text-[#E0EDFF]/92 leading-relaxed">
+                Data gaji tahunan lintas tingkat pendidikan (Bachelor, Master, PhD) dan masa kerja
+                untuk uji linearitas.
               </p>
             </div>
-            <div className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[#1562FF]">
+
+            <div className="relative z-10 mt-5 inline-flex w-fit items-center gap-2 rounded-xl bg-white px-4 py-2 text-[13px] font-bold text-[#1562FF] shadow-xs transition-all group-hover:bg-[#EFF6FF]">
               <span>Muat dataset ini</span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
             </div>

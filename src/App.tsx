@@ -14,7 +14,11 @@ import {
   runFullAnalysis,
   runPolicySimulation,
 } from './lib/statistics';
-import { exportAuditReportXlsx } from './lib/excel';
+import {
+  downloadExcelTemplate,
+  exportAuditReportCsv,
+  exportAuditReportXlsx,
+} from './lib/excel';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { SplashScreen } from './components/SplashScreen';
@@ -97,6 +101,7 @@ export default function App() {
   const [filterModalOpen, setFilterModalOpen] = useState(false);
   const [rawDataModalOpen, setRawDataModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Python API sync result (non-blocking verification against /api/analyze on Vercel / local Python)
   const [pythonVerifiedStats, setPythonVerifiedStats] = useState<{
@@ -249,9 +254,29 @@ export default function App() {
 
   const activeFilterCount = filters.departments.length + filters.groups.length;
 
-  const handleExportReport = () => {
+  const handleExportExcel = async () => {
+    if (!activeDataset || !analysis || !simulation || !candidateOffer || isExporting) return;
+    setIsExporting(true);
+    try {
+      await exportAuditReportXlsx({
+        datasetName: activeDataset.name,
+        mapping,
+        analysis,
+        simulation,
+        candidateYears,
+        offerLower: candidateOffer.lowerBound,
+        offerMid: candidateOffer.predictedSalary,
+        offerUpper: candidateOffer.upperBound,
+        rows: cleaned.records.map((r) => r.raw),
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportCsv = () => {
     if (!activeDataset || !analysis || !simulation || !candidateOffer) return;
-    exportAuditReportXlsx({
+    exportAuditReportCsv({
       datasetName: activeDataset.name,
       mapping,
       analysis,
@@ -290,9 +315,12 @@ export default function App() {
             datasetName={activeDataset?.name ?? null}
             hasDataset={Boolean(activeDataset)}
             activeFilterCount={activeFilterCount}
+            isExporting={isExporting}
             onOpenMobileMenu={() => setMobileMenuOpen(true)}
             onOpenFilter={() => setFilterModalOpen(true)}
-            onExportReport={handleExportReport}
+            onExportExcel={() => void handleExportExcel()}
+            onExportCsv={handleExportCsv}
+            onDownloadTemplate={() => void downloadExcelTemplate()}
           />
           {isTabLoading && (
             <div
