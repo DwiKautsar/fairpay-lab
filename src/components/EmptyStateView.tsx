@@ -6,6 +6,7 @@ interface EmptyStateViewProps {
   activeTab: TabId;
   onSelectDataset: (key: DatasetKey) => void;
   onOpenUpload: () => void;
+  onDownloadTemplate?: () => void;
 }
 
 const TAB_CONTEXT: Record<TabId, { kicker: string; title: string; subtitle: string }> = {
@@ -39,6 +40,7 @@ export function EmptyStateView({
   activeTab,
   onSelectDataset,
   onOpenUpload,
+  onDownloadTemplate,
 }: EmptyStateViewProps) {
   const ctx = TAB_CONTEXT[activeTab];
 
@@ -82,7 +84,7 @@ export function EmptyStateView({
             </button>
             <button
               type="button"
-              onClick={() => void downloadExcelTemplate()}
+              onClick={() => (onDownloadTemplate ? onDownloadTemplate() : void downloadExcelTemplate())}
               className="inline-flex items-center gap-2 rounded-xl border border-[#D5DCE8] bg-white px-4 py-2.5 text-[13.5px] font-medium text-[#334155] transition-colors hover:bg-[#F3F5F9] hover:text-[#0F172A] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
             >
               <FileSpreadsheet className="h-4 w-4 text-[#0F9D78]" />

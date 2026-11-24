@@ -31,10 +31,18 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
     const t2 = window.setTimeout(() => setPhase('exit'), exitDelay);
     const t3 = window.setTimeout(() => onComplete(), doneDelay);
 
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onComplete();
+      }
+    };
+    document.addEventListener('keydown', onKeyDown);
+
     return () => {
       window.clearTimeout(t1);
       window.clearTimeout(t2);
       window.clearTimeout(t3);
+      document.removeEventListener('keydown', onKeyDown);
     };
   }, [onComplete]);
 
@@ -143,6 +151,20 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           />
         </motion.div>
       </div>
+
+      {/* Quiet quick-skip button for returning visitors */}
+      <button
+        type="button"
+        onClick={onComplete}
+        aria-label="Lewati animasi pembuka"
+        className={`absolute bottom-6 right-6 z-20 rounded-lg px-3 py-1.5 font-mono text-[11px] font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 ${
+          isInverted
+            ? 'text-white/60 hover:bg-white/10 hover:text-white focus-visible:ring-white/60'
+            : 'text-[#64748B] hover:bg-[#F1F5F9] hover:text-[#0F172A] focus-visible:ring-[#1562FF]'
+        }`}
+      >
+        Lewati
+      </button>
     </motion.div>
   );
 }

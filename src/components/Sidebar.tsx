@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import {
   ChevronDown,
   CircleDashed,
@@ -52,6 +53,15 @@ export function Sidebar({
   mobileOpen,
   onCloseMobile,
 }: SidebarProps) {
+  useEffect(() => {
+    if (!mobileOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCloseMobile();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [mobileOpen, onCloseMobile]);
+
   const sidebarBody = (
     <div className="flex h-full flex-col overflow-y-auto scrollbar-navy bg-[#0C2B7E] text-white select-none">
       {/* Brand Header */}

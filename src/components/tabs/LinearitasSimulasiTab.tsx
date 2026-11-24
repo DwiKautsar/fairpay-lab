@@ -1,6 +1,11 @@
 import { useState } from 'react';
-import { Check, RotateCcw, ShieldCheck } from 'lucide-react';
-import type { CandidateOfferResult, LinearityResult, SimulationResult } from '../../types/fairpay';
+import { ArrowLeft, ArrowRight, Check, RotateCcw, ShieldCheck } from 'lucide-react';
+import type {
+  CandidateOfferResult,
+  LinearityResult,
+  SimulationResult,
+  TabId,
+} from '../../types/fairpay';
 import {
   formatBudgetK,
   formatDecimalComma,
@@ -25,7 +30,14 @@ interface LinearitasSimulasiTabProps {
   onChangeCandidateYears: (v: number) => void;
   candidateOffer: CandidateOfferResult;
   experienceLabel: string;
+  onNavigateTab?: (tab: TabId) => void;
 }
+
+const SCENARIO_PRESETS = [
+  { label: 'Konservatif', subsidy: 6, loyalty: 4 },
+  { label: 'Seimbang', subsidy: 12, loyalty: 8 },
+  { label: 'Progresif', subsidy: 20, loyalty: 12 },
+];
 
 export function LinearitasSimulasiTab({
   subsidyPct,
@@ -39,6 +51,7 @@ export function LinearitasSimulasiTab({
   onChangeCandidateYears,
   candidateOffer,
   experienceLabel,
+  onNavigateTab,
 }: LinearitasSimulasiTabProps) {
   const [hoveredPt, setHoveredPt] = useState<number | null>(null);
 
@@ -131,8 +144,40 @@ export function LinearitasSimulasiTab({
               )}
             </div>
 
+            {/* Quick Scenario Presets */}
+            <div className="mt-5">
+              <div className="text-[11.5px] font-medium text-[#64748B] mb-2">
+                Preset cepat skenario
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {SCENARIO_PRESETS.map((preset) => {
+                  const isActive = subsidyPct === preset.subsidy && loyaltyPct === preset.loyalty;
+                  return (
+                    <button
+                      key={preset.label}
+                      type="button"
+                      onClick={() => {
+                        onChangeSubsidy(preset.subsidy);
+                        onChangeLoyalty(preset.loyalty);
+                      }}
+                      className={`rounded-xl border px-2.5 py-2 text-center transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] ${
+                        isActive
+                          ? 'border-[#1562FF] bg-[#EEF4FF] text-[#0C2B7E] shadow-2xs'
+                          : 'border-[#E2E8F0] bg-white text-[#475569] hover:border-[#CBD5E1] hover:text-[#0F172A]'
+                      }`}
+                    >
+                      <div className="text-[12px] font-semibold leading-tight">{preset.label}</div>
+                      <div className="mt-0.5 font-mono text-[10.5px] text-[#64748B] tabular-nums">
+                        {preset.subsidy}% · {preset.loyalty}%
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Sliders */}
-            <div className="mt-7 space-y-7">
+            <div className="mt-6 space-y-6">
               {/* Slider 1: Subsidi gaji bawah */}
               <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
@@ -217,7 +262,7 @@ export function LinearitasSimulasiTab({
         </section>
 
         {/* Right: Hasil Langsung (Before vs After) */}
-        <section className="flex flex-col justify-between rounded-2xl border border-[#EEF1F7] bg-white p-6 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
+        <section className="flex flex-col justify-between rounded-2xl border border-[#EEF1F7] bg-white p-5 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -228,7 +273,7 @@ export function LinearitasSimulasiTab({
                   Sebelum vs sesudah
                 </h2>
               </div>
-              <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider text-[#1562FF] uppercase">
+              <span className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold tracking-wider text-[#1562FF] uppercase shrink-0">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#1562FF]" aria-hidden="true" />
                 LIVE
               </span>
@@ -236,35 +281,39 @@ export function LinearitasSimulasiTab({
 
             {/* Comparison Table */}
             <div className="mt-6">
-              <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center pb-3 border-b border-[#EEF1F7] font-mono text-[11px] font-medium tracking-wider text-[#94A3B8] uppercase">
-                <span />
-                <span className="text-right">SEBELUM</span>
-                <span className="text-right">SESUDAH</span>
+              <div className="grid grid-cols-[minmax(0,1fr)_68px_76px] sm:grid-cols-[minmax(0,1fr)_96px_104px] items-center gap-2 sm:gap-3 pb-3 border-b border-[#EEF1F7] font-mono text-[10.5px] sm:text-[11px] font-medium tracking-wider text-[#94A3B8] uppercase">
+                <span>Metrik</span>
+                <span className="text-right whitespace-nowrap">SEBELUM</span>
+                <span className="text-right whitespace-nowrap">SESUDAH</span>
               </div>
 
               <div className="divide-y divide-[#F1F4F9]">
                 {/* Row 1: Normalitas */}
-                <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center py-4 gap-2">
-                  <div>
-                    <div className="flex items-center gap-1.5 text-[14.5px] font-bold text-[#0F172A]">
-                      <span>Normalitas</span>
+                <div className="grid grid-cols-[minmax(0,1fr)_68px_76px] sm:grid-cols-[minmax(0,1fr)_96px_104px] items-start gap-2 sm:gap-3 py-4">
+                  <div className="min-w-0">
+                    <div className="flex min-h-[24px] items-center gap-1.5 text-[13.5px] sm:text-[14.5px] font-bold text-[#0F172A] leading-snug">
+                      <span className="truncate">Normalitas</span>
                       <FormulaInfoButton formulaId="shapiroWilk" />
                     </div>
-                    <div className="text-[12px] text-[#94A3B8]">Shapiro-Wilk · p-value</div>
+                    <div className="mt-0.5 text-[11.5px] sm:text-[12px] text-[#94A3B8] leading-snug">
+                      Shapiro-Wilk · p-value
+                    </div>
                   </div>
-                  <div className="text-right font-mono text-[14.5px] text-[#94A3B8] line-through tabular-nums">
+                  <div className="flex min-h-[24px] items-center justify-end font-mono text-[12.5px] sm:text-[14px] text-[#94A3B8] line-through tabular-nums whitespace-nowrap">
                     {formatPValueCompact(simulation.before.shapiroP)}
                   </div>
                   <div className="text-right">
                     <div
-                      className={`font-mono text-[16px] font-semibold tabular-nums ${
+                      className={`flex min-h-[24px] items-center justify-end font-mono text-[13.5px] sm:text-[15.5px] font-semibold tabular-nums whitespace-nowrap ${
                         simulation.normalityPassed ? 'text-[#059669]' : 'text-[#B45309]'
                       }`}
                     >
-                      {formatPValueFull(simulation.after.shapiroP, false)}
+                      {simulation.after.shapiroP < 0.001
+                        ? '<0.001'
+                        : formatPValueFull(simulation.after.shapiroP, false)}
                     </div>
                     <div
-                      className={`text-[12px] font-semibold ${
+                      className={`mt-0.5 text-[11.5px] sm:text-[12px] font-semibold leading-snug ${
                         simulation.normalityPassed ? 'text-[#059669]' : 'text-[#B45309]'
                       }`}
                     >
@@ -274,27 +323,31 @@ export function LinearitasSimulasiTab({
                 </div>
 
                 {/* Row 2: Homogenitas */}
-                <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center py-4 gap-2">
-                  <div>
-                    <div className="flex items-center gap-1.5 text-[14.5px] font-bold text-[#0F172A]">
-                      <span>Homogenitas</span>
+                <div className="grid grid-cols-[minmax(0,1fr)_68px_76px] sm:grid-cols-[minmax(0,1fr)_96px_104px] items-start gap-2 sm:gap-3 py-4">
+                  <div className="min-w-0">
+                    <div className="flex min-h-[24px] items-center gap-1.5 text-[13.5px] sm:text-[14.5px] font-bold text-[#0F172A] leading-snug">
+                      <span className="truncate">Homogenitas</span>
                       <FormulaInfoButton formulaId="leveneTest" />
                     </div>
-                    <div className="text-[12px] text-[#94A3B8]">Levene · p-value</div>
+                    <div className="mt-0.5 text-[11.5px] sm:text-[12px] text-[#94A3B8] leading-snug">
+                      Levene · p-value
+                    </div>
                   </div>
-                  <div className="text-right font-mono text-[14.5px] text-[#94A3B8] line-through tabular-nums">
+                  <div className="flex min-h-[24px] items-center justify-end font-mono text-[12.5px] sm:text-[14px] text-[#94A3B8] line-through tabular-nums whitespace-nowrap">
                     {formatPValueCompact(simulation.before.leveneP)}
                   </div>
                   <div className="text-right">
                     <div
-                      className={`font-mono text-[16px] font-semibold tabular-nums ${
+                      className={`flex min-h-[24px] items-center justify-end font-mono text-[13.5px] sm:text-[15.5px] font-semibold tabular-nums whitespace-nowrap ${
                         simulation.homogeneityPassed ? 'text-[#059669]' : 'text-[#B45309]'
                       }`}
                     >
-                      {formatPValueFull(simulation.after.leveneP, false)}
+                      {simulation.after.leveneP < 0.001
+                        ? '<0.001'
+                        : formatPValueFull(simulation.after.leveneP, false)}
                     </div>
                     <div
-                      className={`text-[12px] font-semibold ${
+                      className={`mt-0.5 text-[11.5px] sm:text-[12px] font-semibold leading-snug ${
                         simulation.homogeneityPassed ? 'text-[#059669]' : 'text-[#B45309]'
                       }`}
                     >
@@ -304,27 +357,29 @@ export function LinearitasSimulasiTab({
                 </div>
 
                 {/* Row 3: Kesenjangan gaji */}
-                <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center py-4 gap-2">
-                  <div>
-                    <div className="flex items-center gap-1.5 text-[14.5px] font-bold text-[#0F172A]">
-                      <span>Kesenjangan gaji</span>
+                <div className="grid grid-cols-[minmax(0,1fr)_68px_76px] sm:grid-cols-[minmax(0,1fr)_96px_104px] items-start gap-2 sm:gap-3 py-4">
+                  <div className="min-w-0">
+                    <div className="flex min-h-[24px] items-center gap-1.5 text-[13.5px] sm:text-[14.5px] font-bold text-[#0F172A] leading-snug">
+                      <span className="truncate">Kesenjangan gaji</span>
                       <FormulaInfoButton formulaId="groupGapPct" />
                     </div>
-                    <div className="text-[12px] text-[#94A3B8]">Selisih median kelompok</div>
+                    <div className="mt-0.5 text-[11.5px] sm:text-[12px] text-[#94A3B8] leading-snug">
+                      Selisih median kelompok
+                    </div>
                   </div>
-                  <div className="text-right font-mono text-[14.5px] text-[#94A3B8] line-through tabular-nums">
+                  <div className="flex min-h-[24px] items-center justify-end font-mono text-[12.5px] sm:text-[14px] text-[#94A3B8] line-through tabular-nums whitespace-nowrap">
                     {formatPercentComma(simulation.before.gapPct, 1)}
                   </div>
                   <div className="text-right">
                     <div
-                      className={`font-mono text-[16px] font-semibold tabular-nums ${
+                      className={`flex min-h-[24px] items-center justify-end font-mono text-[13.5px] sm:text-[15.5px] font-semibold tabular-nums whitespace-nowrap ${
                         simulation.gapPassed ? 'text-[#059669]' : 'text-[#B45309]'
                       }`}
                     >
-                      {formatPercentDot(simulation.after.gapPct, 1)}
+                      {formatPercentComma(simulation.after.gapPct, 1)}
                     </div>
                     <div
-                      className={`text-[12px] font-semibold ${
+                      className={`mt-0.5 text-[11.5px] sm:text-[12px] font-semibold leading-snug ${
                         simulation.gapPassed ? 'text-[#059669]' : 'text-[#B45309]'
                       }`}
                     >
@@ -336,18 +391,41 @@ export function LinearitasSimulasiTab({
             </div>
           </div>
 
-          {/* Bottom Callout matching both screenshots */}
-          <div className="mt-5 flex items-start gap-2.5 rounded-xl bg-[#EEF4FF] px-4 py-3.5 text-[13px] leading-relaxed text-[#334155]">
-            <Check className="h-4.5 w-4.5 shrink-0 text-[#1562FF] mt-0.5" strokeWidth={2.4} />
+          {/* Bottom Dynamic Callout */}
+          <div
+            className={`mt-5 flex items-start gap-2.5 rounded-xl px-4 py-3.5 text-[13px] leading-relaxed ${
+              isBothPassed && simulation.gapPassed
+                ? 'bg-[#E6F8F1] text-[#065F46]'
+                : 'bg-[#EEF4FF] text-[#334155]'
+            }`}
+          >
+            <Check
+              className={`h-4.5 w-4.5 shrink-0 mt-0.5 ${
+                isBothPassed && simulation.gapPassed ? 'text-[#059669]' : 'text-[#1562FF]'
+              }`}
+              strokeWidth={2.4}
+            />
             <p>
-              <strong className="font-bold text-[#1562FF]">
-                {isBothPassed
-                  ? 'Skenario makin mendekati ambang adil.'
-                  : 'Skenario makin mendekati ambang adil.'}
+              <strong
+                className={`font-bold ${
+                  isBothPassed && simulation.gapPassed ? 'text-[#047857]' : 'text-[#1562FF]'
+                }`}
+              >
+                {isBothPassed && simulation.gapPassed
+                  ? 'Seluruh ambang keadilan statistik terpenuhi.'
+                  : isBothPassed
+                    ? 'Asumsi normalitas dan homogenitas terpenuhi.'
+                    : subsidyPct === 0 && loyaltyPct === 0
+                      ? 'Belum ada intervensi aktif.'
+                      : 'Skenario bergerak mendekati ambang adil.'}
               </strong>{' '}
-              {isBothPassed
-                ? 'Kedua asumsi statistik kini terpenuhi.'
-                : 'Tingkatkan parameter hingga kedua p-value melewati 0,05.'}
+              {isBothPassed && simulation.gapPassed
+                ? 'Distribusi normal, varians homogen, dan kesenjangan median berada di bawah 5%.'
+                : isBothPassed
+                  ? 'Sesuaikan subsidi gaji bawah sedikit lagi agar kesenjangan median turun di bawah 5%.'
+                  : subsidyPct === 0 && loyaltyPct === 0
+                    ? 'Pilih preset atau geser slider di samping untuk melihat dampak kebijakan secara langsung.'
+                    : 'Tingkatkan subsidi atau bonus loyalitas hingga kedua p-value melewati 0,05.'}
             </p>
           </div>
         </section>
@@ -582,6 +660,28 @@ export function LinearitasSimulasiTab({
           </svg>
         </div>
       </section>
+
+      {/* Guided Step Footer */}
+      {onNavigateTab && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#EEF1F6] pt-4">
+          <button
+            type="button"
+            onClick={() => onNavigateTab('homogenitas')}
+            className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium text-[#475569] hover:bg-[#F3F5F9] hover:text-[#0F172A] transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Uji Homogenitas (Levene)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigateTab('ringkasan')}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#EEF4FF] px-4 py-2 text-[13px] font-semibold text-[#1562FF] hover:bg-[#E0ECFF] transition-colors cursor-pointer"
+          >
+            <span>Kembali ke Ringkasan Audit</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

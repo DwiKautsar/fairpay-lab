@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Info } from 'lucide-react';
-import type { NormalityResult } from '../../types/fairpay';
+import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
+import type { NormalityResult, TabId } from '../../types/fairpay';
 import { formatDecimalComma, formatIntegerId, formatPValueFull } from '../../lib/format';
 import { FormulaInfoButton } from '../FormulaInfoButton';
 
@@ -9,6 +9,7 @@ interface NormalitasTabProps {
   normalityLog: NormalityResult;
   logTransform: boolean;
   onToggleLogTransform: () => void;
+  onNavigateTab?: (tab: TabId) => void;
 }
 
 export function NormalitasTab({
@@ -16,6 +17,7 @@ export function NormalitasTab({
   normalityLog,
   logTransform,
   onToggleLogTransform,
+  onNavigateTab,
 }: NormalitasTabProps) {
   const active = logTransform ? normalityLog : normalityRaw;
   const [hoveredBin, setHoveredBin] = useState<number | null>(null);
@@ -401,6 +403,28 @@ export function NormalitasTab({
           </div>
         </section>
       </div>
+
+      {/* Guided Audit Flow Footer */}
+      {onNavigateTab && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#EEF1F6] pt-4">
+          <button
+            type="button"
+            onClick={() => onNavigateTab('ringkasan')}
+            className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium text-[#475569] hover:bg-[#F3F5F9] hover:text-[#0F172A] transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Ringkasan Audit</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigateTab('homogenitas')}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#EEF4FF] px-4 py-2 text-[13px] font-semibold text-[#1562FF] hover:bg-[#E0ECFF] transition-colors cursor-pointer"
+          >
+            <span>Lanjut: Uji Homogenitas (Levene)</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

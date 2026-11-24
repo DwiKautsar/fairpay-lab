@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react';
-import { ArrowUpDown, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
 import type { DataRow } from '../types/fairpay';
 import { formatIntegerId } from '../lib/format';
 
@@ -24,6 +24,15 @@ export function RawDataModal({
   const [sortCol, setSortCol] = useState<string | null>(null);
   const [sortAsc, setSortAsc] = useState(true);
   const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
 
   const filteredRows = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -55,6 +64,7 @@ export function RawDataModal({
   const visibleRows = filteredRows.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const handleSort = (col: string) => {
+    setPage(1);
     if (sortCol === col) {
       setSortAsc(!sortAsc);
     } else {
@@ -87,8 +97,8 @@ export function RawDataModal({
             </h2>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
+          <div className="flex w-full sm:w-auto items-center gap-2.5 sm:gap-3">
+            <div className="relative flex-1 sm:flex-initial">
               <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#94A3B8]" />
               <input
                 type="search"
@@ -99,14 +109,14 @@ export function RawDataModal({
                 }}
                 placeholder="Cari posisi, divisi, gender..."
                 aria-label="Cari data mentah"
-                className="w-56 sm:w-64 rounded-xl border border-[#DDE3EE] bg-[#F8FAFC] py-2 pl-9 pr-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#1562FF] focus:bg-white focus:outline-none"
+                className="w-full sm:w-64 rounded-xl border border-[#DDE3EE] bg-[#F8FAFC] py-2 pl-9 pr-3 text-[13px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#1562FF] focus:bg-white focus:outline-none"
               />
             </div>
             <button
               type="button"
               onClick={onClose}
               aria-label="Tutup tabel data mentah"
-              className="rounded-lg p-2 text-[#64748B] hover:bg-[#F3F5F9] hover:text-[#0F172A] transition-colors cursor-pointer"
+              className="shrink-0 rounded-lg p-2 text-[#64748B] hover:bg-[#F3F5F9] hover:text-[#0F172A] transition-colors cursor-pointer"
             >
               <X className="h-5 w-5" />
             </button>
@@ -121,18 +131,31 @@ export function RawDataModal({
                 <th className="px-4 py-3 font-mono text-[11px] font-semibold text-[#64748B] w-14">
                   #
                 </th>
-                {columns.map((col) => (
-                  <th key={col} className="px-4 py-3 whitespace-nowrap">
-                    <button
-                      type="button"
-                      onClick={() => handleSort(col)}
-                      className="inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold text-[#334155] hover:text-[#1562FF] transition-colors cursor-pointer"
-                    >
-                      <span>{col}</span>
-                      <ArrowUpDown className="h-3.5 w-3.5 text-[#94A3B8]" />
-                    </button>
-                  </th>
-                ))}
+                {columns.map((col) => {
+                  const isSorted = sortCol === col;
+                  return (
+                    <th key={col} className="px-4 py-3 whitespace-nowrap">
+                      <button
+                        type="button"
+                        onClick={() => handleSort(col)}
+                        className={`inline-flex items-center gap-1.5 font-mono text-[11px] font-semibold transition-colors cursor-pointer ${
+                          isSorted ? 'text-[#1562FF]' : 'text-[#334155] hover:text-[#1562FF]'
+                        }`}
+                      >
+                        <span>{col}</span>
+                        {isSorted ? (
+                          sortAsc ? (
+                            <ArrowUp className="h-3.5 w-3.5 text-[#1562FF]" />
+                          ) : (
+                            <ArrowDown className="h-3.5 w-3.5 text-[#1562FF]" />
+                          )
+                        ) : (
+                          <ArrowUpDown className="h-3.5 w-3.5 text-[#94A3B8]" />
+                        )}
+                      </button>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F1F5F9]">

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
+import { Filter, X } from 'lucide-react';
 import type {
   ActiveFilters,
   ColumnMapping,
@@ -19,6 +20,7 @@ import {
   exportAuditReportCsv,
   exportAuditReportXlsx,
 } from './lib/excel';
+import { formatIntegerId } from './lib/format';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
 import { AppFooter } from './components/AppFooter';
@@ -30,6 +32,7 @@ import { EmptyStateView } from './components/EmptyStateView';
 import { FilterModal } from './components/FilterModal';
 import { RawDataModal } from './components/RawDataModal';
 import { UploadModal } from './components/UploadModal';
+import { ToastNotice, type ToastMessage } from './components/ToastNotice';
 import { RingkasanTab } from './components/tabs/RingkasanTab';
 import { NormalitasTab } from './components/tabs/NormalitasTab';
 import { HomogenitasTab } from './components/tabs/HomogenitasTab';
@@ -114,6 +117,9 @@ export default function App() {
       if (enterTimerRef.current !== null) {
         window.clearTimeout(enterTimerRef.current);
       }
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current);
+      }
     };
   }, []);
 
@@ -140,6 +146,22 @@ export default function App() {
   const [rawDataModalOpen, setRawDataModalOpen] = useState(false);
   const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
+
+  const showToast = useCallback(
+    (title: string, description?: string, tone: 'success' | 'info' = 'success') => {
+      if (toastTimerRef.current !== null) {
+        window.clearTimeout(toastTimerRef.current);
+      }
+      setToast({ id: Date.now(), title, description, tone });
+      toastTimerRef.current = window.setTimeout(() => {
+        setToast(null);
+        toastTimerRef.current = null;
+      }, 3400);
+    },
+    []
+  );
 
   // Python API sync result (non-blocking verification against /api/analyze on Vercel / local Python)
   const [pythonVerifiedStats, setPythonVerifiedStats] = useState<{
@@ -157,6 +179,7 @@ export default function App() {
       setFilters({ departments: [], groups: [] });
       setLogTransform(false);
       setPythonVerifiedStats(null);
+      showToast('Dataset dikosongkan', 'Pilih atau unggah file baru untuk memulai audit.', 'info');
       return;
     }
     const target =
@@ -168,6 +191,10 @@ export default function App() {
     setMapping(target.defaultMapping);
     setFilters({ departments: [], groups: [] });
     setLogTransform(false);
+    showToast(
+      `Dataset ${target.shortName} dimuat`,
+      `${formatIntegerId(target.rows.length)} baris siap dianalisis pada seluruh uji statistik.`
+    );
   };
 
   const handleUploadedDataset = (uploaded: DatasetBundle) => {
@@ -176,6 +203,10 @@ export default function App() {
     setMapping(uploaded.defaultMapping);
     setFilters({ departments: [], groups: [] });
     setLogTransform(false);
+    showToast(
+      'File berhasil diimpor',
+      `${uploaded.name} (${formatIntegerId(uploaded.rows.length)} baris) siap diaudit.`
+    );
   };
 
   // Unique values for Filter modal
@@ -307,6 +338,10 @@ export default function App() {
         offerUpper: candidateOffer.upperBound,
         rows: cleaned.records.map((r) => r.raw),
       });
+      showToast(
+        'Laporan Excel (.xlsx) diunduh',
+        'Berisi 5 sheet lengkap beserta 4 diagram visual dan hasil simulasi.'
+      );
     } finally {
       setIsExporting(false);
     }
@@ -325,6 +360,18 @@ export default function App() {
       offerUpper: candidateOffer.upperBound,
       rows: cleaned.records.map((r) => r.raw),
     });
+    showToast(
+      'Data lengkap (.csv) diunduh',
+      'File UTF-8 BOM siap dibuka langsung di Microsoft Excel.'
+    );
+  };
+
+  const handleDownloadTemplate = async () => {
+    await downloadExcelTemplate();
+    showToast(
+      'Template Excel (9 Kolom) diunduh',
+      'Lengkap dengan 20 contoh data terisi dan sheet panduan.'
+    );
   };
 
   return (
@@ -409,7 +456,7 @@ export default function App() {
             onOpenFilter={() => setFilterModalOpen(true)}
             onExportExcel={() => void handleExportExcel()}
             onExportCsv={handleExportCsv}
-            onDownloadTemplate={() => void downloadExcelTemplate()}
+            onDownloadTemplate={() => void handleDownloadTemplate()}
           />
           {isTabLoading && (
             <div
@@ -440,6 +487,7 @@ export default function App() {
                 activeTab={activeTab}
                 onSelectDataset={handleSelectDataset}
                 onOpenUpload={() => setUploadModalOpen(true)}
+                onDownloadTemplate={() => void handleDownloadTemplate()}
               />
             </motion.div>
           ) : (
@@ -449,6 +497,63 @@ export default function App() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
             >
+              {/* Active Filter Summary Strip for immediate transparency */}
+              {activeFilterCount > 0 && (
+                <div className="mb-5 flex flex-wrap items-center justify-between gap-2.5 rounded-xl border border-[#DCE7FF] bg-[#F5F9FF] px-3.5 py-2.5 text-[12.5px]">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-[#0C2B7E]">
+                      <Filter className="h-3.5 w-3.5 text-[#1562FF]" />
+                      <span>Filter aktif:</span>
+                    </span>
+                    {filters.departments.map((dept) => (
+                      <button
+                        key={`dept-${dept}`}
+                        type="button"
+                        onClick={() =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            departments: prev.departments.filter((d) => d !== dept),
+                          }))
+                        }
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#BFDBFE] bg-white px-2 py-0.5 text-[12px] font-medium text-[#1E3A8A] hover:bg-[#EFF6FF] transition-colors cursor-pointer"
+                      >
+                        <span>{dept}</span>
+                        <X className="h-3 w-3 text-[#64748B]" />
+                      </button>
+                    ))}
+                    {filters.groups.map((grp) => (
+                      <button
+                        key={`grp-${grp}`}
+                        type="button"
+                        onClick={() =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            groups: prev.groups.filter((g) => g !== grp),
+                          }))
+                        }
+                        className="inline-flex items-center gap-1 rounded-lg border border-[#BFDBFE] bg-white px-2 py-0.5 text-[12px] font-medium text-[#1E3A8A] hover:bg-[#EFF6FF] transition-colors cursor-pointer"
+                      >
+                        <span>{grp}</span>
+                        <X className="h-3 w-3 text-[#64748B]" />
+                      </button>
+                    ))}
+                    <span className="font-mono text-[11.5px] text-[#64748B] tabular-nums">
+                      · {formatIntegerId(analysis.kpi.validRows)} baris cocok
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFilters({ departments: [], groups: [] });
+                      showToast('Filter direset', 'Seluruh data kembali ditampilkan.', 'info');
+                    }}
+                    className="text-[12px] font-semibold text-[#1562FF] hover:text-[#0C2B7E] transition-colors cursor-pointer whitespace-nowrap"
+                  >
+                    Reset filter
+                  </button>
+                </div>
+              )}
+
               {activeTab === 'ringkasan' && (
                 <RingkasanTab
                   analysis={analysis}
@@ -466,6 +571,7 @@ export default function App() {
                   normalityLog={analysis.normalityLog}
                   logTransform={logTransform}
                   onToggleLogTransform={() => setLogTransform((prev) => !prev)}
+                  onNavigateTab={handleSelectTab}
                 />
               )}
 
@@ -473,6 +579,7 @@ export default function App() {
                 <HomogenitasTab
                   homogeneity={analysis.homogeneity}
                   groupColumnLabel={mapping.groupCol}
+                  onNavigateTab={handleSelectTab}
                 />
               )}
 
@@ -485,6 +592,7 @@ export default function App() {
                   onResetSimulation={() => {
                     setSubsidyPct(0);
                     setLoyaltyPct(0);
+                    showToast('Parameter simulasi direset', 'Subsidi dan bonus kembali ke 0%.', 'info');
                   }}
                   simulation={simulation}
                   linearity={analysis.linearity}
@@ -492,6 +600,7 @@ export default function App() {
                   onChangeCandidateYears={setCandidateYears}
                   candidateOffer={candidateOffer}
                   experienceLabel={mapping.experienceCol}
+                  onNavigateTab={handleSelectTab}
                 />
               )}
             </motion.div>
@@ -538,6 +647,8 @@ export default function App() {
         onClose={() => setUploadModalOpen(false)}
         onDatasetLoaded={handleUploadedDataset}
       />
+
+      <ToastNotice toast={toast} onDismiss={() => setToast(null)} />
     </div>
   );
 }

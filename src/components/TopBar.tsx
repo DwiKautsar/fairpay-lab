@@ -54,17 +54,30 @@ export function TopBar({
   }, [exportMenuOpen]);
 
   return (
-    <header className="flex h-[68px] w-full items-center justify-between gap-4 border-b border-[#EEF0F5] bg-white/95 px-4 backdrop-blur-md shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:px-6 lg:px-10">
-      {/* Left: Mobile Hamburger + Desktop Breadcrumb */}
-      <div className="flex items-center gap-3 min-w-0">
+    <header className="flex h-[68px] w-full items-center justify-between gap-2 sm:gap-4 border-b border-[#EEF0F5] bg-white/95 px-3.5 backdrop-blur-md shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:px-6 lg:px-10">
+      {/* Left: Mobile Hamburger + Compact Context / Desktop Breadcrumb */}
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <button
           type="button"
           onClick={onOpenMobileMenu}
           aria-label="Buka menu navigasi"
-          className="inline-flex h-10 w-10 items-center justify-center rounded-xl text-[#111827] hover:bg-[#F3F5F9] transition-colors lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-[#111827] hover:bg-[#F3F5F9] transition-colors lg:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
         >
           <Menu className="h-5 w-5" />
         </button>
+
+        <div className="flex flex-col min-w-0 lg:hidden">
+          <span className="font-mono text-[9.5px] font-semibold tracking-[0.1em] text-[#94A3B8] uppercase leading-none">
+            FairPay
+          </span>
+          <span
+            className={`mt-0.5 truncate text-[12.5px] leading-tight ${
+              datasetName ? 'font-semibold text-[#0F172A]' : 'font-medium text-[#94A3B8]'
+            }`}
+          >
+            {datasetName ?? 'Belum ada dataset'}
+          </span>
+        </div>
 
         <div className="hidden lg:flex items-center gap-2.5 text-[13.5px] min-w-0">
           <span className="text-[#94A3B8] whitespace-nowrap">Audit aktif</span>
@@ -104,14 +117,22 @@ export function TopBar({
             onClick={() => setExportMenuOpen((prev) => !prev)}
             aria-haspopup="menu"
             aria-expanded={exportMenuOpen}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#1562FF] px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_2px_10px_rgba(21,98,255,0.22)] transition-all hover:bg-[#0E51DB] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2 whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-45 disabled:shadow-none disabled:cursor-not-allowed disabled:hover:bg-[#1562FF]"
+            className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#1562FF] px-3 sm:px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_2px_10px_rgba(21,98,255,0.22)] transition-all hover:bg-[#0E51DB] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2 whitespace-nowrap shrink-0 cursor-pointer disabled:opacity-45 disabled:shadow-none disabled:cursor-not-allowed disabled:hover:bg-[#1562FF]"
           >
             {isExporting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <Download className="h-4 w-4" />
             )}
-            <span>{isExporting ? 'Menyiapkan...' : 'Ekspor laporan'}</span>
+            <span>
+              {isExporting ? (
+                'Menyiapkan...'
+              ) : (
+                <>
+                  Ekspor<span className="hidden sm:inline"> laporan</span>
+                </>
+              )}
+            </span>
             <ChevronDown
               className={`h-3.5 w-3.5 opacity-85 transition-transform duration-150 ${
                 exportMenuOpen ? 'rotate-180' : ''

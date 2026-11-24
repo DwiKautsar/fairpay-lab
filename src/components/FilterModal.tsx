@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { RotateCcw, SlidersHorizontal, X } from 'lucide-react';
 import type { ActiveFilters, ColumnMapping } from '../types/fairpay';
 
@@ -26,6 +27,15 @@ export function FilterModal({
   onChangeFilters,
   onResetAll,
 }: FilterModalProps) {
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const toggleDept = (dept: string) => {

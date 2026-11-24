@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AlertCircle, CheckCircle2, FileSpreadsheet, Upload, X } from 'lucide-react';
 import type { DatasetBundle } from '../types/fairpay';
 import { downloadExcelTemplate, parseUploadedSpreadsheet } from '../lib/excel';
@@ -14,6 +14,15 @@ export function UploadModal({ open, onClose, onDatasetLoaded }: UploadModalProps
   const [dragging, setDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [open, onClose]);
 
   if (!open) return null;
 

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { ShieldCheck } from 'lucide-react';
-import type { HomogeneityResult } from '../../types/fairpay';
+import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
+import type { HomogeneityResult, TabId } from '../../types/fairpay';
 import {
   formatDecimalComma,
   formatIntegerId,
@@ -13,9 +13,14 @@ import { FormulaInfoButton } from '../FormulaInfoButton';
 interface HomogenitasTabProps {
   homogeneity: HomogeneityResult;
   groupColumnLabel: string;
+  onNavigateTab?: (tab: TabId) => void;
 }
 
-export function HomogenitasTab({ homogeneity, groupColumnLabel }: HomogenitasTabProps) {
+export function HomogenitasTab({
+  homogeneity,
+  groupColumnLabel,
+  onNavigateTab,
+}: HomogenitasTabProps) {
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
 
   const groups = homogeneity.groups.slice(0, 6);
@@ -311,6 +316,28 @@ export function HomogenitasTab({ homogeneity, groupColumnLabel }: HomogenitasTab
           dipilih karena lebih robust terhadap data yang tidak normal dibanding Bartlett&apos;s Test.
         </p>
       </div>
+
+      {/* Guided Audit Flow Footer */}
+      {onNavigateTab && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#EEF1F6] pt-4">
+          <button
+            type="button"
+            onClick={() => onNavigateTab('normalitas')}
+            className="inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-[13px] font-medium text-[#475569] hover:bg-[#F3F5F9] hover:text-[#0F172A] transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span>Uji Normalitas (Shapiro–Wilk)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => onNavigateTab('linearitas')}
+            className="inline-flex items-center gap-2 rounded-xl bg-[#EEF4FF] px-4 py-2 text-[13px] font-semibold text-[#1562FF] hover:bg-[#E0ECFF] transition-colors cursor-pointer"
+          >
+            <span>Lanjut: Linearitas &amp; Simulator</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
