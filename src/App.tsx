@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import type {
   ActiveFilters,
   ColumnMapping,
@@ -21,7 +21,10 @@ import {
 } from './lib/excel';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
+import { AppFooter } from './components/AppFooter';
+import { BrandLogo } from './components/BrandLogo';
 import { SplashScreen } from './components/SplashScreen';
+import { WelcomeScreen } from './components/WelcomeScreen';
 import { TabLoadingView } from './components/TabLoadingView';
 import { EmptyStateView } from './components/EmptyStateView';
 import { FilterModal } from './components/FilterModal';
@@ -41,6 +44,8 @@ const EMPTY_MAPPING: ColumnMapping = {
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [appStage, setAppStage] = useState<'welcome' | 'entering' | 'dashboard'>('welcome');
+  const enterTimerRef = useRef<number | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('ringkasan');
   const [isTabLoading, setIsTabLoading] = useState(false);
   const tabLoadingTimerRef = useRef<number | null>(null);
@@ -50,6 +55,36 @@ export default function App() {
 
   const handleSplashComplete = useCallback(() => {
     setShowSplash(false);
+  }, []);
+
+  const handleEnterDashboard = useCallback(() => {
+    if (enterTimerRef.current !== null) {
+      window.clearTimeout(enterTimerRef.current);
+    }
+    const prefersReduced =
+      typeof window !== 'undefined' &&
+      window.matchMedia &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    setAppStage('entering');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+    }
+    enterTimerRef.current = window.setTimeout(
+      () => {
+        setAppStage('dashboard');
+        enterTimerRef.current = null;
+      },
+      prefersReduced ? 320 : 1150
+    );
+  }, []);
+
+  const handleBackToWelcome = useCallback(() => {
+    setMobileMenuOpen(false);
+    setAppStage('welcome');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   const handleSelectTab = useCallback(
@@ -75,6 +110,9 @@ export default function App() {
     return () => {
       if (tabLoadingTimerRef.current !== null) {
         window.clearTimeout(tabLoadingTimerRef.current);
+      }
+      if (enterTimerRef.current !== null) {
+        window.clearTimeout(enterTimerRef.current);
       }
     };
   }, []);
@@ -290,26 +328,77 @@ export default function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-white text-[#0F172A]">
+    <div className="min-h-screen bg-white text-[#0F172A]">
       {/* Branded Entrance Splash Screen */}
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
 
-      {/* Left Navigation Sidebar */}
-      <Sidebar
-        activeTab={activeTab}
-        onSelectTab={handleSelectTab}
-        activeDataset={activeDataset}
-        customDataset={customDataset}
-        onSelectDataset={handleSelectDataset}
-        onOpenUpload={() => setUploadModalOpen(true)}
-        validRowCount={analysis?.kpi.validRows ?? 0}
-        columnCount={activeDataset?.columns.length ?? 0}
-        mobileOpen={mobileMenuOpen}
-        onCloseMobile={() => setMobileMenuOpen(false)}
-      />
+      <AnimatePresence mode="wait">
+        {appStage === 'welcome' && (
+          <WelcomeScreen key="welcome" onEnterDashboard={handleEnterDashboard} />
+        )}
 
-      {/* Right Main Workspace */}
-      <div className="flex min-w-0 flex-1 flex-col">
+        {appStage === 'entering' && (
+          <motion.div
+            key="entering"
+            role="status"
+            aria-label="Membuka Dashboard Audit FairPay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, scale: 1.015 }}
+            transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+            className="flex min-h-screen flex-col items-center justify-center bg-white px-6 select-none"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.94, y: 8 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="flex flex-col items-center text-center"
+            >
+              <BrandLogo variant="color" className="h-[56px] w-[70px]" />
+              <div className="mt-4 font-display text-[20px] font-bold tracking-tight text-[#0B1221]">
+                Menyiapkan ruang kerja audit
+              </div>
+              <div className="mt-1 text-[13px] text-[#64748B]">
+                Memuat mesin uji normalitas, homogenitas &amp; simulator kebijakan...
+              </div>
+              <div className="mt-6 h-[3.5px] w-48 overflow-hidden rounded-full bg-[#E8F0FF]">
+                <motion.div
+                  initial={{ x: '-100%' }}
+                  animate={{ x: '0%' }}
+                  transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+                  className="h-full w-full rounded-full bg-gradient-to-r from-[#0C2B7E] via-[#1562FF] to-[#60A5FA]"
+                />
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {appStage === 'dashboard' && (
+          <motion.div
+            key="dashboard"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+            className="flex min-h-screen bg-white text-[#0F172A]"
+          >
+            {/* Left Navigation Sidebar */}
+            <Sidebar
+              activeTab={activeTab}
+              onSelectTab={handleSelectTab}
+              activeDataset={activeDataset}
+              customDataset={customDataset}
+              onSelectDataset={handleSelectDataset}
+              onOpenUpload={() => setUploadModalOpen(true)}
+              onBackToWelcome={handleBackToWelcome}
+              validRowCount={analysis?.kpi.validRows ?? 0}
+              columnCount={activeDataset?.columns.length ?? 0}
+              mobileOpen={mobileMenuOpen}
+              onCloseMobile={() => setMobileMenuOpen(false)}
+            />
+
+            {/* Right Main Workspace */}
+            <div className="flex min-w-0 flex-1 flex-col">
         <div className="sticky top-0 z-30 w-full">
           <TopBar
             datasetName={activeDataset?.name ?? null}
@@ -408,7 +497,12 @@ export default function App() {
             </motion.div>
           )}
         </main>
-      </div>
+
+              <AppFooter />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Interactive Modals */}
       {activeDataset && (

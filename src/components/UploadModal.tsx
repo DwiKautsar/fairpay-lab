@@ -135,17 +135,17 @@ export function UploadModal({ open, onClose, onDatasetLoaded }: UploadModalProps
                 Butuh format kolom standar?
               </div>
               <div className="text-[11.5px] text-[#64748B]">
-                Unduh template Excel siap isi untuk uji coba mandiri.
+                Unduh template Excel 9 kolom lengkap beserta panduan pengisian.
               </div>
             </div>
           </div>
           <button
             type="button"
-            onClick={downloadExcelTemplate}
+            onClick={() => void downloadExcelTemplate()}
             className="inline-flex items-center gap-1.5 rounded-lg border border-[#D5DCE8] bg-white px-3 py-1.5 text-[12.5px] font-semibold text-[#1E293B] hover:bg-[#F3F5F9] transition-colors whitespace-nowrap cursor-pointer"
           >
             <CheckCircle2 className="h-3.5 w-3.5 text-[#1562FF]" />
-            <span>Unduh Template Excel</span>
+            <span>Unduh Template (9 Kolom)</span>
           </button>
         </div>
       </div>

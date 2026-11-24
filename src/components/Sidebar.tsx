@@ -20,6 +20,7 @@ interface SidebarProps {
   customDataset: DatasetBundle | null;
   onSelectDataset: (key: DatasetKey) => void;
   onOpenUpload: () => void;
+  onBackToWelcome?: () => void;
   validRowCount: number;
   columnCount: number;
   mobileOpen: boolean;
@@ -45,6 +46,7 @@ export function Sidebar({
   customDataset,
   onSelectDataset,
   onOpenUpload,
+  onBackToWelcome,
   validRowCount,
   columnCount,
   mobileOpen,
@@ -54,7 +56,12 @@ export function Sidebar({
     <div className="flex h-full flex-col overflow-y-auto scrollbar-navy bg-[#0C2B7E] text-white select-none">
       {/* Brand Header */}
       <div className="flex items-center justify-between px-5 pt-6 pb-7">
-        <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={onBackToWelcome}
+          title="Kembali ke halaman pembuka FairPay"
+          className="flex items-center gap-3 text-left rounded-lg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 cursor-pointer"
+        >
           <BrandLogo className="w-[38px] h-[30px] text-white shrink-0" />
           <div className="min-w-0">
             <div className="font-display text-[19px] font-bold tracking-tight leading-tight text-white">
@@ -64,7 +71,7 @@ export function Sidebar({
               HR EQUITY AUDITOR
             </div>
           </div>
-        </div>
+        </button>
         <button
           type="button"
           onClick={onCloseMobile}
@@ -212,8 +219,10 @@ export function Sidebar({
       {/* Bottom Academic Footer */}
       <div className="mt-auto px-5 pb-6 pt-6">
         <div className="mb-4 h-px bg-white/12" />
-        <div className="text-[13px] font-bold text-white leading-tight">Tim Statistika</div>
-        <div className="mt-0.5 text-[11.5px] text-[#8FA6DA]">Proyek akademik</div>
+        <div className="text-[12.5px] font-bold text-white leading-tight">
+          Kelompok Gemini Stats 5A
+        </div>
+        <div className="mt-0.5 text-[11px] text-[#8FA6DA]">Probabilitas &amp; Statistika</div>
       </div>
     </div>
   );

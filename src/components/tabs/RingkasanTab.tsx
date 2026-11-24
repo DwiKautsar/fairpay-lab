@@ -14,6 +14,7 @@ import {
   formatSalaryK,
   formatSalaryKWhole,
 } from '../../lib/format';
+import { FormulaInfoButton } from '../FormulaInfoButton';
 
 interface RingkasanTabProps {
   analysis: AnalysisBundle;
@@ -96,7 +97,10 @@ export function RingkasanTab({
             <Wallet className="h-[18px] w-[18px]" strokeWidth={1.9} />
           </div>
           <div className="min-w-0">
-            <div className="text-[12.5px] font-medium text-[#64748B]">Rata-rata gaji</div>
+            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+              <span>Rata-rata gaji</span>
+              <FormulaInfoButton formulaId="meanSalary" />
+            </div>
             <div className="mt-1 font-mono text-[24px] sm:text-[26px] font-bold tracking-tight text-[#0F172A] tabular-nums">
               {formatSalaryK(kpi.meanSalary, 1)}
             </div>
@@ -112,7 +116,10 @@ export function RingkasanTab({
             <BarChart3 className="h-[18px] w-[18px]" strokeWidth={1.9} />
           </div>
           <div className="min-w-0">
-            <div className="text-[12.5px] font-medium text-[#64748B]">Median gaji</div>
+            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+              <span>Median gaji</span>
+              <FormulaInfoButton formulaId="medianSalary" />
+            </div>
             <div className="mt-1 font-mono text-[24px] sm:text-[26px] font-bold tracking-tight text-[#0F172A] tabular-nums">
               {formatSalaryK(kpi.medianSalary, 1)}
             </div>
@@ -126,7 +133,10 @@ export function RingkasanTab({
             <ArrowLeftRight className="h-[18px] w-[18px]" strokeWidth={1.9} />
           </div>
           <div className="min-w-0">
-            <div className="text-[12.5px] font-medium text-[#64748B]">Kesenjangan grup</div>
+            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+              <span>Kesenjangan grup</span>
+              <FormulaInfoButton formulaId="groupGapPct" />
+            </div>
             <div className="mt-1 font-mono text-[24px] sm:text-[26px] font-bold tracking-tight text-[#0F172A] tabular-nums">
               {formatPercentComma(kpi.groupGapPct, 1)}
             </div>
@@ -151,8 +161,11 @@ export function RingkasanTab({
                 <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
                   DISTRIBUSI
                 </div>
-                <h2 className="mt-1.5 text-[19px] sm:text-[21px] font-bold tracking-tight text-[#0F172A]">
-                  Gaji rata-rata per {departmentLabel.toLowerCase() === 'dept' ? 'divisi' : departmentLabel}
+                <h2 className="mt-1.5 flex items-center gap-2 text-[19px] sm:text-[21px] font-bold tracking-tight text-[#0F172A]">
+                  <span>
+                    Gaji rata-rata per {departmentLabel.toLowerCase() === 'dept' ? 'divisi' : departmentLabel}
+                  </span>
+                  <FormulaInfoButton formulaId="meanSalary" />
                 </h2>
               </div>
               <button
@@ -320,14 +333,22 @@ export function RingkasanTab({
 
           <div className="grid flex-1 grid-cols-1 divide-y divide-[#E7EBF4] sm:grid-cols-3 sm:divide-y-0 sm:divide-x">
             {/* Test 1: Shapiro-Wilk */}
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => onNavigateTab('normalitas')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onNavigateTab('normalitas');
+                }
+              }}
               className="group flex flex-col items-start py-3.5 text-left transition-colors sm:px-5 sm:py-1 first:pt-0 sm:first:pl-5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] rounded-lg"
             >
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-[13.5px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
-                  Shapiro–Wilk
+                <span className="inline-flex items-center gap-1.5 text-[13.5px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
+                  <span>Shapiro–Wilk</span>
+                  <FormulaInfoButton formulaId="shapiroWilk" />
                 </span>
                 <span className="font-mono text-[11.5px] text-[#94A3B8] tabular-nums">
                   W {formatDecimalComma(normalityRaw.wStatistic, 3)}
@@ -348,17 +369,25 @@ export function RingkasanTab({
                 />
                 {normalityRaw.isNormal ? 'Normal' : 'Tidak normal'}
               </span>
-            </button>
+            </div>
 
             {/* Test 2: Levene's Test */}
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => onNavigateTab('homogenitas')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onNavigateTab('homogenitas');
+                }
+              }}
               className="group flex flex-col items-start py-3.5 text-left transition-colors sm:px-5 sm:py-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] rounded-lg"
             >
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-[13.5px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
-                  Levene&apos;s Test
+                <span className="inline-flex items-center gap-1.5 text-[13.5px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
+                  <span>Levene&apos;s Test</span>
+                  <FormulaInfoButton formulaId="leveneTest" />
                 </span>
                 <span className="font-mono text-[11.5px] text-[#94A3B8] tabular-nums">
                   F {formatDecimalComma(homogeneity.fStatistic, 3)}
@@ -379,17 +408,25 @@ export function RingkasanTab({
                 />
                 {homogeneity.isHomogeneous ? 'Homogen' : 'Heterogen'}
               </span>
-            </button>
+            </div>
 
             {/* Test 3: Uji Linearitas */}
-            <button
-              type="button"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={() => onNavigateTab('linearitas')}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onNavigateTab('linearitas');
+                }
+              }}
               className="group flex flex-col items-start py-3.5 text-left transition-colors sm:px-5 sm:py-1 last:pb-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] rounded-lg"
             >
               <div className="flex w-full items-center justify-between gap-2">
-                <span className="text-[13.5px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
-                  Uji Linearitas
+                <span className="inline-flex items-center gap-1.5 text-[13.5px] font-bold text-[#0F172A] group-hover:text-[#1562FF] transition-colors">
+                  <span>Uji Linearitas</span>
+                  <FormulaInfoButton formulaId="regressionLinearity" />
                 </span>
                 <span className="font-mono text-[11.5px] text-[#94A3B8] tabular-nums">
                   R² {formatDecimalComma(linearity.rSquaredLinear, 3)}
@@ -410,7 +447,7 @@ export function RingkasanTab({
                 />
                 {linearity.isLinear ? 'Cukup linear' : 'Terindikasi plateau'}
               </span>
-            </button>
+            </div>
           </div>
         </div>
       </section>

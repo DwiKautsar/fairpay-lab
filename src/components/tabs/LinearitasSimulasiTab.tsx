@@ -11,6 +11,7 @@ import {
   formatSalaryK,
   formatSalaryKWhole,
 } from '../../lib/format';
+import { FormulaInfoButton } from '../FormulaInfoButton';
 
 interface LinearitasSimulasiTabProps {
   subsidyPct: number;
@@ -112,8 +113,9 @@ export function LinearitasSimulasiTab({
                 <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
                   PARAMETER SIMULASI
                 </div>
-                <h2 className="mt-1.5 text-[20px] font-bold tracking-tight text-[#0F172A]">
-                  Rancang skenario
+                <h2 className="mt-1.5 flex items-center gap-2 text-[20px] font-bold tracking-tight text-[#0F172A]">
+                  <span>Rancang skenario</span>
+                  <FormulaInfoButton formulaId="policySimulation" />
                 </h2>
               </div>
               {(subsidyPct > 0 || loyaltyPct > 0) && (
@@ -244,7 +246,10 @@ export function LinearitasSimulasiTab({
                 {/* Row 1: Normalitas */}
                 <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center py-4 gap-2">
                   <div>
-                    <div className="text-[14.5px] font-bold text-[#0F172A]">Normalitas</div>
+                    <div className="flex items-center gap-1.5 text-[14.5px] font-bold text-[#0F172A]">
+                      <span>Normalitas</span>
+                      <FormulaInfoButton formulaId="shapiroWilk" />
+                    </div>
                     <div className="text-[12px] text-[#94A3B8]">Shapiro-Wilk · p-value</div>
                   </div>
                   <div className="text-right font-mono text-[14.5px] text-[#94A3B8] line-through tabular-nums">
@@ -271,7 +276,10 @@ export function LinearitasSimulasiTab({
                 {/* Row 2: Homogenitas */}
                 <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center py-4 gap-2">
                   <div>
-                    <div className="text-[14.5px] font-bold text-[#0F172A]">Homogenitas</div>
+                    <div className="flex items-center gap-1.5 text-[14.5px] font-bold text-[#0F172A]">
+                      <span>Homogenitas</span>
+                      <FormulaInfoButton formulaId="leveneTest" />
+                    </div>
                     <div className="text-[12px] text-[#94A3B8]">Levene · p-value</div>
                   </div>
                   <div className="text-right font-mono text-[14.5px] text-[#94A3B8] line-through tabular-nums">
@@ -298,7 +306,10 @@ export function LinearitasSimulasiTab({
                 {/* Row 3: Kesenjangan gaji */}
                 <div className="grid grid-cols-[1fr_76px_84px] sm:grid-cols-[1fr_92px_96px] items-center py-4 gap-2">
                   <div>
-                    <div className="text-[14.5px] font-bold text-[#0F172A]">Kesenjangan gaji</div>
+                    <div className="flex items-center gap-1.5 text-[14.5px] font-bold text-[#0F172A]">
+                      <span>Kesenjangan gaji</span>
+                      <FormulaInfoButton formulaId="groupGapPct" />
+                    </div>
                     <div className="text-[12px] text-[#94A3B8]">Selisih median kelompok</div>
                   </div>
                   <div className="text-right font-mono text-[14.5px] text-[#94A3B8] line-through tabular-nums">
@@ -349,8 +360,9 @@ export function LinearitasSimulasiTab({
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
               KALKULATOR TAWARAN
             </div>
-            <h2 className="mt-1.5 text-[20px] font-bold tracking-tight text-[#0F172A]">
-              Estimasi gaji karyawan baru
+            <h2 className="mt-1.5 flex items-center gap-2 text-[20px] font-bold tracking-tight text-[#0F172A]">
+              <span>Estimasi gaji karyawan baru</span>
+              <FormulaInfoButton formulaId="offerCalculator" />
             </h2>
             <p className="mt-1.5 text-[13.5px] text-[#64748B] leading-relaxed">
               Prediksi berbasis garis regresi agar tawaran baru tidak merusak struktur keadilan.
@@ -402,8 +414,9 @@ export function LinearitasSimulasiTab({
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
               UJI LINEARITAS REGRESI
             </div>
-            <h2 className="mt-1.5 text-[19px] sm:text-[21px] font-bold tracking-tight text-[#0F172A]">
-              Hubungan gaji vs {expHumanLabel} &amp; deteksi titik jenuh karir
+            <h2 className="mt-1.5 flex items-center gap-2 text-[19px] sm:text-[21px] font-bold tracking-tight text-[#0F172A]">
+              <span>Hubungan gaji vs {expHumanLabel} &amp; deteksi titik jenuh karir</span>
+              <FormulaInfoButton formulaId="regressionLinearity" />
             </h2>
           </div>
 

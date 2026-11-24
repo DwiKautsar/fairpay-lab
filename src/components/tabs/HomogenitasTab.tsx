@@ -8,6 +8,7 @@ import {
   formatSalaryKComma,
   formatSalaryKWhole,
 } from '../../lib/format';
+import { FormulaInfoButton } from '../FormulaInfoButton';
 
 interface HomogenitasTabProps {
   homogeneity: HomogeneityResult;
@@ -60,7 +61,10 @@ export function HomogenitasTab({ homogeneity, groupColumnLabel }: HomogenitasTab
       <section className="rounded-2xl bg-[#F8F9FC] overflow-hidden">
         <div className="grid grid-cols-2 lg:grid-cols-[190px_190px_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#E6EAF2]">
           <div className="p-5 sm:p-6 border-r border-[#E6EAF2] lg:border-r-0">
-            <div className="text-[12.5px] font-medium text-[#64748B]">Statistik F</div>
+            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+              <span>Statistik F</span>
+              <FormulaInfoButton formulaId="leveneTest" />
+            </div>
             <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
               {formatDecimalComma(homogeneity.fStatistic, 3)}
             </div>
@@ -105,8 +109,9 @@ export function HomogenitasTab({ homogeneity, groupColumnLabel }: HomogenitasTab
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
               PERBANDINGAN KELOMPOK
             </div>
-            <h2 className="mt-1.5 text-[19px] sm:text-[21px] font-bold tracking-tight text-[#0F172A]">
-              Rentang gaji berdasarkan {groupNameClean}
+            <h2 className="mt-1.5 flex items-center gap-2 text-[19px] sm:text-[21px] font-bold tracking-tight text-[#0F172A]">
+              <span>Rentang gaji berdasarkan {groupNameClean}</span>
+              <FormulaInfoButton formulaId="boxplotIqr" />
             </h2>
           </div>
 

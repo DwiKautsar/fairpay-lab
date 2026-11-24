@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Info } from 'lucide-react';
 import type { NormalityResult } from '../../types/fairpay';
 import { formatDecimalComma, formatIntegerId, formatPValueFull } from '../../lib/format';
+import { FormulaInfoButton } from '../FormulaInfoButton';
 
 interface NormalitasTabProps {
   normalityRaw: NormalityResult;
@@ -108,34 +109,37 @@ export function NormalitasTab({
           </p>
         </div>
 
-        {/* Interactive Log Transformation Toggle Card */}
-        <button
-          type="button"
-          role="switch"
-          aria-checked={logTransform}
-          onClick={onToggleLogTransform}
-          className="inline-flex items-center gap-3.5 self-start sm:self-end rounded-2xl bg-[#F2F4F8] px-4 py-3 text-left transition-colors hover:bg-[#EAEFF7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] shrink-0 cursor-pointer"
-        >
-          <span
-            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ${
-              logTransform ? 'bg-[#1562FF]' : 'bg-[#CBD5E1]'
-            }`}
+        {/* Interactive Log Transformation Toggle Card + Formula Info */}
+        <div className="inline-flex items-center gap-2 self-start sm:self-end shrink-0">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={logTransform}
+            onClick={onToggleLogTransform}
+            className="inline-flex items-center gap-3.5 rounded-2xl bg-[#F2F4F8] px-4 py-3 text-left transition-colors hover:bg-[#EAEFF7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] cursor-pointer"
           >
             <span
-              className={`inline-block h-4.5 w-4.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                logTransform ? 'translate-x-5.5' : 'translate-x-1'
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-200 ${
+                logTransform ? 'bg-[#1562FF]' : 'bg-[#CBD5E1]'
               }`}
-            />
-          </span>
-          <div>
-            <div className="text-[11px] font-medium text-[#64748B] leading-tight">
-              Transformasi
+            >
+              <span
+                className={`inline-block h-4.5 w-4.5 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                  logTransform ? 'translate-x-5.5' : 'translate-x-1'
+                }`}
+              />
+            </span>
+            <div>
+              <div className="text-[11px] font-medium text-[#64748B] leading-tight">
+                Transformasi
+              </div>
+              <div className="mt-0.5 text-[13px] font-bold text-[#0F172A] leading-tight whitespace-nowrap">
+                {logTransform ? 'Logaritma aktif' : 'Logaritma nonaktif'}
+              </div>
             </div>
-            <div className="mt-0.5 text-[13px] font-bold text-[#0F172A] leading-tight whitespace-nowrap">
-              {logTransform ? 'Logaritma aktif' : 'Logaritma nonaktif'}
-            </div>
-          </div>
-        </button>
+          </button>
+          <FormulaInfoButton formulaId="logTransform" size="md" />
+        </div>
       </div>
 
       {/* Stratified Sampling Notice if N > 5,000 (PRD Section 6.1) */}
@@ -154,7 +158,10 @@ export function NormalitasTab({
       <section className="rounded-2xl bg-[#F8F9FC] overflow-hidden">
         <div className="grid grid-cols-2 lg:grid-cols-[190px_190px_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#E6EAF2]">
           <div className="p-5 sm:p-6 border-r border-[#E6EAF2] lg:border-r-0">
-            <div className="text-[12.5px] font-medium text-[#64748B]">Statistik W</div>
+            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+              <span>Statistik W</span>
+              <FormulaInfoButton formulaId="shapiroWilk" />
+            </div>
             <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
               {formatDecimalComma(active.wStatistic, 3)}
             </div>
@@ -203,8 +210,9 @@ export function NormalitasTab({
               <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
                 HISTOGRAM
               </div>
-              <h2 className="mt-1.5 text-[19px] font-bold tracking-tight text-[#0F172A]">
-                Sebaran gaji tahunan
+              <h2 className="mt-1.5 flex items-center gap-2 text-[19px] font-bold tracking-tight text-[#0F172A]">
+                <span>Sebaran gaji tahunan</span>
+                <FormulaInfoButton formulaId="normalHistogram" />
               </h2>
             </div>
             <div className="text-right font-mono text-[11.5px] text-[#94A3B8] whitespace-nowrap">
@@ -301,8 +309,9 @@ export function NormalitasTab({
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
               Q-Q PLOT
             </div>
-            <h2 className="mt-1.5 text-[19px] font-bold tracking-tight text-[#0F172A]">
-              Observasi vs ekspektasi
+            <h2 className="mt-1.5 flex items-center gap-2 text-[19px] font-bold tracking-tight text-[#0F172A]">
+              <span>Observasi vs ekspektasi</span>
+              <FormulaInfoButton formulaId="qqPlot" />
             </h2>
           </div>
 
