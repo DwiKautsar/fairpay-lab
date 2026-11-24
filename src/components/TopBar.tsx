@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { motion } from 'motion/react';
 import {
   ChevronDown,
   Download,
@@ -14,6 +15,7 @@ interface TopBarProps {
   hasDataset: boolean;
   activeFilterCount: number;
   isExporting?: boolean;
+  isTabLoading?: boolean;
   onOpenMobileMenu: () => void;
   onOpenFilter: () => void;
   onExportExcel: () => void;
@@ -26,6 +28,7 @@ export function TopBar({
   hasDataset,
   activeFilterCount,
   isExporting = false,
+  isTabLoading = false,
   onOpenMobileMenu,
   onOpenFilter,
   onExportExcel,
@@ -54,7 +57,7 @@ export function TopBar({
   }, [exportMenuOpen]);
 
   return (
-    <header className="flex h-[68px] w-full items-center justify-between gap-2 sm:gap-4 border-b border-[#EEF0F5] bg-white/95 px-3.5 backdrop-blur-md shadow-[0_1px_2px_rgba(15,23,42,0.03)] sm:px-6 lg:px-10">
+    <header className="relative flex h-[64px] w-full items-center justify-between gap-2 sm:gap-4 border-b border-[#E7EDF8] bg-white/90 px-3.5 backdrop-blur-xl shadow-[0_2px_10px_rgba(12,43,126,0.04)] sm:px-6 lg:rounded-[14px] lg:border lg:border-white/90 lg:bg-white/80 lg:px-5 lg:shadow-[0_8px_24px_-10px_rgba(12,43,126,0.08),0_1px_4px_rgba(12,43,126,0.03),inset_0_1px_0_rgba(255,255,255,0.95)] lg:ring-1 lg:ring-[#DCE6F7]/75">
       {/* Left: Mobile Hamburger + Compact Context / Desktop Breadcrumb */}
       <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <button
@@ -214,6 +217,20 @@ export function TopBar({
           )}
         </div>
       </div>
+
+      {isTabLoading && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 lg:inset-x-3 bottom-0 h-[2.5px] overflow-hidden rounded-full bg-[#E8F0FF]"
+        >
+          <motion.div
+            initial={{ x: '-100%' }}
+            animate={{ x: '100%' }}
+            transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+            className="h-full w-2/3 rounded-full bg-gradient-to-r from-[#0C2B7E] via-[#1562FF] to-[#60A5FA]"
+          />
+        </div>
+      )}
     </header>
   );
 }

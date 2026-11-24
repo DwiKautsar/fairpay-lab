@@ -427,7 +427,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-            className="flex min-h-screen bg-white text-[#0F172A]"
+            className="flex min-h-screen bg-gradient-to-br from-[#F2F6FE] via-[#F9FBFF] to-[#FFFFFF] text-[#0F172A]"
           >
             {/* Left Navigation Sidebar */}
             <Sidebar
@@ -446,34 +446,24 @@ export default function App() {
 
             {/* Right Main Workspace */}
             <div className="flex min-w-0 flex-1 flex-col">
-        <div className="sticky top-0 z-30 w-full">
-          <TopBar
-            datasetName={activeDataset?.name ?? null}
-            hasDataset={Boolean(activeDataset)}
-            activeFilterCount={activeFilterCount}
-            isExporting={isExporting}
-            onOpenMobileMenu={() => setMobileMenuOpen(true)}
-            onOpenFilter={() => setFilterModalOpen(true)}
-            onExportExcel={() => void handleExportExcel()}
-            onExportCsv={handleExportCsv}
-            onDownloadTemplate={() => void handleDownloadTemplate()}
-          />
-          {isTabLoading && (
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-0 bottom-0 h-[2.5px] overflow-hidden bg-[#E8F0FF]"
-            >
-              <motion.div
-                initial={{ x: '-100%' }}
-                animate={{ x: '100%' }}
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full w-2/3 rounded-full bg-gradient-to-r from-[#0C2B7E] via-[#1562FF] to-[#60A5FA]"
-              />
-            </div>
-          )}
-        </div>
+              <div className="sticky top-0 z-20 w-full lg:px-5 lg:pt-2 lg:pb-1 lg:bg-gradient-to-b lg:from-[#F4F8FE]/95 lg:via-[#F7FAFF]/75 lg:to-transparent">
+                <div className="lg:mx-auto lg:w-full lg:max-w-[1160px]">
+                  <TopBar
+                    datasetName={activeDataset?.name ?? null}
+                    hasDataset={Boolean(activeDataset)}
+                    activeFilterCount={activeFilterCount}
+                    isExporting={isExporting}
+                    isTabLoading={isTabLoading}
+                    onOpenMobileMenu={() => setMobileMenuOpen(true)}
+                    onOpenFilter={() => setFilterModalOpen(true)}
+                    onExportExcel={() => void handleExportExcel()}
+                    onExportCsv={handleExportCsv}
+                    onDownloadTemplate={() => void handleDownloadTemplate()}
+                  />
+                </div>
+              </div>
 
-        <main className="mx-auto w-full max-w-[1160px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-10 lg:py-6">
+              <main className="mx-auto w-full max-w-[1160px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-5 lg:py-5">
           {isTabLoading ? (
             <TabLoadingView targetTab={activeTab} />
           ) : !activeDataset || !analysis || !simulation || !candidateOffer ? (

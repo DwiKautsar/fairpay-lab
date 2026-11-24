@@ -172,7 +172,7 @@ export function AppFooter() {
   );
 
   return (
-    <footer className="mt-auto border-t border-[#EEF1F6] bg-white px-4 py-4 sm:px-6 lg:px-10">
+    <footer className="mt-auto border-t border-[#E6EDF8]/75 bg-white/55 backdrop-blur-sm px-4 py-4 sm:px-6 lg:px-5">
       <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
         <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[#64748B] sm:justify-start">
           <span>&copy; 2026</span>
