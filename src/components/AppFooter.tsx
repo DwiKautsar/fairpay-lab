@@ -239,7 +239,7 @@ export function AppFooter({ variant = 'welcome' }: AppFooterProps) {
       className={
         variant === 'dashboard'
           ? 'mt-auto w-full lg:px-5 xl:px-7 lg:pb-3.5 lg:pt-1'
-          : 'relative z-10 mt-auto border-t border-[#0C2B7E]/[0.08] bg-white/45 px-5 py-4 sm:px-8 lg:px-10'
+          : 'relative z-10 mt-auto border-t border-[#E6EDF8] bg-white px-5 py-4 sm:px-8 lg:px-10'
       }
     >
       {variant === 'dashboard' ? (
