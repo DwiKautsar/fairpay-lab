@@ -205,10 +205,10 @@ export function AppFooter({ variant = 'welcome' }: AppFooterProps) {
 
   const footerInner = (
     <div className="flex w-full flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
-      <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[#64748B] sm:justify-start">
+      <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-[12px] sm:text-[12.5px] text-[#64748B] sm:justify-start">
         <span>&copy; 2026</span>
         <strong className="font-semibold text-[#0F172A]">Kelompok Gemini Stats 5A</strong>
-        <span>&middot; FairPay HR Equity Auditor</span>
+        <span className="hidden sm:inline">&middot; FairPay HR Equity Auditor</span>
         <button
           ref={triggerRef}
           type="button"
@@ -228,8 +228,12 @@ export function AppFooter({ variant = 'welcome' }: AppFooterProps) {
         </button>
       </div>
 
-      <div className="font-mono text-[11px] text-[#64748B]/90">
-        Probabilitas &amp; Statistika
+      <div className="flex w-full items-center justify-center gap-1.5 border-t border-[#EDF2FB] pt-2 sm:w-auto sm:border-t-0 sm:pt-0 font-mono text-[10.5px] sm:text-[11px] text-[#64748B]/90">
+        <span className="sm:hidden font-sans font-medium text-[#475569]">
+          FairPay HR Equity Auditor
+        </span>
+        <span className="sm:hidden text-[#CBD5E1]">&middot;</span>
+        <span>Probabilitas &amp; Statistika</span>
       </div>
     </div>
   );
@@ -238,16 +242,18 @@ export function AppFooter({ variant = 'welcome' }: AppFooterProps) {
     <footer
       className={
         variant === 'dashboard'
-          ? 'mt-auto w-full lg:px-5 xl:px-7 lg:pb-3.5 lg:pt-1'
-          : 'relative z-10 mt-auto border-t border-[#E6EDF8] bg-white px-5 py-4 sm:px-8 lg:px-10'
+          ? 'mt-auto w-full px-3.5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2 sm:px-5 lg:px-5 xl:px-7 lg:pb-3.5 lg:pt-1'
+          : 'relative z-10 mt-auto w-full px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-1 sm:border-t sm:border-[#E6EDF8] sm:bg-white sm:px-8 sm:py-4 lg:px-10'
       }
     >
       {variant === 'dashboard' ? (
-        <div className="mx-auto w-full max-w-[1520px] border-t border-[#E7EDF8] bg-white/92 px-4 py-3.5 sm:px-6 lg:rounded-[18px] lg:border lg:border-white/90 lg:bg-white/88 lg:px-6 lg:py-3.5 lg:backdrop-blur-md lg:shadow-[0_10px_28px_-10px_rgba(12,43,126,0.08),0_2px_6px_rgba(12,43,126,0.035),inset_0_1px_0_rgba(255,255,255,0.95)] lg:ring-1 lg:ring-[#DCE6F7]/75">
+        <div className="mx-auto w-full max-w-[1520px] rounded-[22px] border border-[#DCE6F7]/95 bg-white px-4 py-3.5 shadow-[0_14px_34px_-10px_rgba(12,43,126,0.16),0_4px_12px_-4px_rgba(12,43,126,0.08),inset_0_1px_0_rgba(255,255,255,1)] ring-1 ring-white/80 sm:px-6 lg:rounded-[18px] lg:border-white/90 lg:bg-white/88 lg:px-6 lg:py-3.5 lg:backdrop-blur-md lg:shadow-[0_10px_28px_-10px_rgba(12,43,126,0.08),0_2px_6px_rgba(12,43,126,0.035),inset_0_1px_0_rgba(255,255,255,0.95)] lg:ring-[#DCE6F7]/75">
           {footerInner}
         </div>
       ) : (
-        <div className="mx-auto w-full max-w-[1240px]">{footerInner}</div>
+        <div className="mx-auto w-full max-w-[1240px] rounded-[22px] border border-[#DCE6F7]/95 bg-white px-4 py-3.5 shadow-[0_16px_38px_-10px_rgba(12,43,126,0.18),0_4px_12px_-4px_rgba(12,43,126,0.08),inset_0_1px_0_rgba(255,255,255,1)] ring-1 ring-white/80 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:ring-0">
+          {footerInner}
+        </div>
       )}
 
       {open &&
