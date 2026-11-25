@@ -65,14 +65,8 @@ export function Sidebar({
 
   const renderSidebarBody = (instance: 'desktop' | 'mobile') => (
     <div className="relative h-full w-full">
-      {/* Subtle atmospheric FairPay Navy halo easing sidebar into workspace */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -inset-1 -right-3 rounded-[22px] bg-gradient-to-r from-[#0C2B7E]/10 via-[#1562FF]/5 to-transparent blur-xl"
-      />
-
-      {/* Modern Architectural Floating Glass Sidebar (Authentic FairPay Navy #0C2B7E + #1562FF Mesh) */}
-      <div className="fairpay-sidebar-mesh relative flex h-full w-full flex-col overflow-hidden rounded-[22px] border border-white/[0.12] text-white backdrop-blur-xl shadow-[0_2px_4px_-1px_rgba(8,22,66,0.12),0_12px_26px_-8px_rgba(12,43,126,0.26),0_26px_48px_-16px_rgba(12,43,126,0.24),10px_14px_34px_-14px_rgba(21,98,255,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] select-none">
+      {/* Modern Architectural Floating Sidebar (Authentic FairPay Navy #0C2B7E + #1562FF Mesh) */}
+      <div className="fairpay-sidebar-mesh relative flex h-full w-full flex-col overflow-hidden rounded-[22px] border border-white/[0.12] text-white shadow-[0_2px_4px_-1px_rgba(8,22,66,0.12),0_12px_26px_-8px_rgba(12,43,126,0.26),0_26px_48px_-16px_rgba(12,43,126,0.24),10px_14px_34px_-14px_rgba(21,98,255,0.15),inset_0_1px_0_rgba(255,255,255,0.2)] select-none">
         {/* Ultra-fine top-edge specular hairline */}
         <div
           aria-hidden="true"
@@ -192,7 +186,7 @@ export function Sidebar({
                   id={instance === 'desktop' ? 'dataset-selector' : 'dataset-selector-mobile'}
                   value={activeDataset ? activeDataset.key : 'none'}
                   onChange={(e) => onSelectDataset(e.target.value as DatasetKey)}
-                  className="w-full appearance-none rounded-xl border border-white/[0.12] bg-white/[0.07] px-3.5 py-2.5 pr-9 text-[13px] font-medium text-white backdrop-blur-md shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] transition-all hover:bg-white/[0.11] hover:border-white/22 focus:border-[#60A5FA] focus:outline-none cursor-pointer"
+                  className="w-full appearance-none rounded-xl border border-white/[0.12] bg-white/[0.08] px-3.5 py-2.5 pr-9 text-[13px] font-medium text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] transition-colors hover:bg-white/[0.12] hover:border-white/22 focus:border-[#60A5FA] focus:outline-none cursor-pointer"
                 >
                   <option value="none" className="bg-[#0C2B7E] text-[#A7BCE8]">
                     Pilih dataset...

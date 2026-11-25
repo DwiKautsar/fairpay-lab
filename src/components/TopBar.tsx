@@ -57,7 +57,7 @@ export function TopBar({
   }, [exportMenuOpen]);
 
   return (
-    <header className="relative flex h-[64px] lg:h-[66px] w-full items-center justify-between gap-2 sm:gap-4 border-b border-[#E7EDF8] bg-white/90 px-3.5 backdrop-blur-xl shadow-[0_2px_10px_rgba(12,43,126,0.04)] sm:px-6 lg:rounded-[18px] lg:border lg:border-white/90 lg:bg-white/82 lg:px-6 lg:shadow-[0_10px_28px_-10px_rgba(12,43,126,0.09),0_2px_6px_rgba(12,43,126,0.04),inset_0_1px_0_rgba(255,255,255,0.95)] lg:ring-1 lg:ring-[#DCE6F7]/75">
+    <header className="relative flex h-[64px] lg:h-[66px] w-full items-center justify-between gap-2 sm:gap-4 border-b border-[#E7EDF8] bg-white/92 px-3.5 backdrop-blur-md shadow-[0_2px_10px_rgba(12,43,126,0.04)] sm:px-6 lg:rounded-[18px] lg:border lg:border-white/90 lg:bg-white/88 lg:px-6 lg:shadow-[0_10px_28px_-10px_rgba(12,43,126,0.09),0_2px_6px_rgba(12,43,126,0.04),inset_0_1px_0_rgba(255,255,255,0.95)] lg:ring-1 lg:ring-[#DCE6F7]/75">
       {/* Left: Mobile Hamburger + Compact Context / Desktop Breadcrumb */}
       <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <button

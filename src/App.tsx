@@ -1,4 +1,13 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { Filter, X } from 'lucide-react';
 import type {
@@ -15,11 +24,6 @@ import {
   runFullAnalysis,
   runPolicySimulation,
 } from './lib/statistics';
-import {
-  downloadExcelTemplate,
-  exportAuditReportCsv,
-  exportAuditReportXlsx,
-} from './lib/excel';
 import { formatIntegerId } from './lib/format';
 import { Sidebar } from './components/Sidebar';
 import { TopBar } from './components/TopBar';
@@ -29,14 +33,29 @@ import { SplashScreen } from './components/SplashScreen';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { TabLoadingView } from './components/TabLoadingView';
 import { EmptyStateView } from './components/EmptyStateView';
-import { FilterModal } from './components/FilterModal';
-import { RawDataModal } from './components/RawDataModal';
-import { UploadModal } from './components/UploadModal';
 import { ToastNotice, type ToastMessage } from './components/ToastNotice';
 import { RingkasanTab } from './components/tabs/RingkasanTab';
-import { NormalitasTab } from './components/tabs/NormalitasTab';
-import { HomogenitasTab } from './components/tabs/HomogenitasTab';
-import { LinearitasSimulasiTab } from './components/tabs/LinearitasSimulasiTab';
+
+const NormalitasTab = lazy(() =>
+  import('./components/tabs/NormalitasTab').then((m) => ({ default: m.NormalitasTab }))
+);
+const HomogenitasTab = lazy(() =>
+  import('./components/tabs/HomogenitasTab').then((m) => ({ default: m.HomogenitasTab }))
+);
+const LinearitasSimulasiTab = lazy(() =>
+  import('./components/tabs/LinearitasSimulasiTab').then((m) => ({
+    default: m.LinearitasSimulasiTab,
+  }))
+);
+const FilterModal = lazy(() =>
+  import('./components/FilterModal').then((m) => ({ default: m.FilterModal }))
+);
+const RawDataModal = lazy(() =>
+  import('./components/RawDataModal').then((m) => ({ default: m.RawDataModal }))
+);
+const UploadModal = lazy(() =>
+  import('./components/UploadModal').then((m) => ({ default: m.UploadModal }))
+);
 
 const EMPTY_MAPPING: ColumnMapping = {
   salaryCol: '',
@@ -50,8 +69,6 @@ export default function App() {
   const [appStage, setAppStage] = useState<'welcome' | 'entering' | 'dashboard'>('welcome');
   const enterTimerRef = useRef<number | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>('ringkasan');
-  const [isTabLoading, setIsTabLoading] = useState(false);
-  const tabLoadingTimerRef = useRef<number | null>(null);
   // Start with no dataset selected so the initial screen shows a clean empty state
   const [datasetKey, setDatasetKey] = useState<DatasetKey>('none');
   const [customDataset, setCustomDataset] = useState<DatasetBundle | null>(null);
@@ -78,7 +95,7 @@ export default function App() {
         setAppStage('dashboard');
         enterTimerRef.current = null;
       },
-      prefersReduced ? 320 : 1150
+      prefersReduced ? 180 : 450
     );
   }, []);
 
@@ -93,27 +110,16 @@ export default function App() {
   const handleSelectTab = useCallback(
     (nextTab: TabId) => {
       if (nextTab === activeTab) return;
-      if (tabLoadingTimerRef.current !== null) {
-        window.clearTimeout(tabLoadingTimerRef.current);
-      }
       setActiveTab(nextTab);
-      setIsTabLoading(true);
       if (typeof window !== 'undefined') {
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
-      tabLoadingTimerRef.current = window.setTimeout(() => {
-        setIsTabLoading(false);
-        tabLoadingTimerRef.current = null;
-      }, 380);
     },
     [activeTab]
   );
 
   useEffect(() => {
     return () => {
-      if (tabLoadingTimerRef.current !== null) {
-        window.clearTimeout(tabLoadingTimerRef.current);
-      }
       if (enterTimerRef.current !== null) {
         window.clearTimeout(enterTimerRef.current);
       }
@@ -309,29 +315,47 @@ export default function App() {
     };
   }, [localAnalysis, pythonVerifiedStats]);
 
-  // Real-time policy simulation (in-memory copy)
+  // Deferred values keep range sliders and numeric inputs buttery-smooth during rapid interaction
+  const deferredSubsidyPct = useDeferredValue(subsidyPct);
+  const deferredLoyaltyPct = useDeferredValue(loyaltyPct);
+  const deferredCandidateYears = useDeferredValue(candidateYears);
+
+  // Real-time policy simulation (computed only when Linearitas tab is active to save CPU on other tabs)
   const simulation = useMemo(() => {
-    if (!activeDataset) return null;
-    return runPolicySimulation(activeDataset.rows, mapping, filters, subsidyPct, loyaltyPct);
-  }, [activeDataset, mapping, filters, subsidyPct, loyaltyPct]);
+    if (!activeDataset || activeTab !== 'linearitas') return null;
+    return runPolicySimulation(
+      activeDataset.rows,
+      mapping,
+      filters,
+      deferredSubsidyPct,
+      deferredLoyaltyPct
+    );
+  }, [activeDataset, activeTab, mapping, filters, deferredSubsidyPct, deferredLoyaltyPct]);
 
   // Candidate fair salary prediction
   const candidateOffer = useMemo(() => {
     if (!analysis) return null;
-    return predictCandidateOffer(analysis.linearity, candidateYears);
-  }, [analysis, candidateYears]);
+    return predictCandidateOffer(analysis.linearity, deferredCandidateYears);
+  }, [analysis, deferredCandidateYears]);
 
   const activeFilterCount = filters.departments.length + filters.groups.length;
 
   const handleExportExcel = async () => {
-    if (!activeDataset || !analysis || !simulation || !candidateOffer || isExporting) return;
+    if (!activeDataset || !analysis || !candidateOffer || isExporting) return;
     setIsExporting(true);
     try {
+      const [{ exportAuditReportXlsx }, activeSim] = await Promise.all([
+        import('./lib/excel'),
+        Promise.resolve(
+          simulation ??
+            runPolicySimulation(activeDataset.rows, mapping, filters, subsidyPct, loyaltyPct)
+        ),
+      ]);
       await exportAuditReportXlsx({
         datasetName: activeDataset.name,
         mapping,
         analysis,
-        simulation,
+        simulation: activeSim,
         candidateYears,
         offerLower: candidateOffer.lowerBound,
         offerMid: candidateOffer.predictedSalary,
@@ -347,13 +371,17 @@ export default function App() {
     }
   };
 
-  const handleExportCsv = () => {
-    if (!activeDataset || !analysis || !simulation || !candidateOffer) return;
+  const handleExportCsv = async () => {
+    if (!activeDataset || !analysis || !candidateOffer) return;
+    const { exportAuditReportCsv } = await import('./lib/excel');
+    const activeSim =
+      simulation ??
+      runPolicySimulation(activeDataset.rows, mapping, filters, subsidyPct, loyaltyPct);
     exportAuditReportCsv({
       datasetName: activeDataset.name,
       mapping,
       analysis,
-      simulation,
+      simulation: activeSim,
       candidateYears,
       offerLower: candidateOffer.lowerBound,
       offerMid: candidateOffer.predictedSalary,
@@ -367,6 +395,7 @@ export default function App() {
   };
 
   const handleDownloadTemplate = async () => {
+    const { downloadExcelTemplate } = await import('./lib/excel');
     await downloadExcelTemplate();
     showToast(
       'Template Excel (9 Kolom) diunduh',
@@ -416,7 +445,7 @@ export default function App() {
                 <motion.div
                   initial={{ x: '-100%' }}
                   animate={{ x: '0%' }}
-                  transition={{ duration: 0.78, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                   className="h-full w-full rounded-full bg-gradient-to-r from-[#0C2B7E] via-[#1562FF] to-[#60A5FA]"
                 />
               </div>
@@ -457,20 +486,18 @@ export default function App() {
                     hasDataset={Boolean(activeDataset)}
                     activeFilterCount={activeFilterCount}
                     isExporting={isExporting}
-                    isTabLoading={isTabLoading}
+                    isTabLoading={false}
                     onOpenMobileMenu={() => setMobileMenuOpen(true)}
                     onOpenFilter={() => setFilterModalOpen(true)}
                     onExportExcel={() => void handleExportExcel()}
-                    onExportCsv={handleExportCsv}
+                    onExportCsv={() => void handleExportCsv()}
                     onDownloadTemplate={() => void handleDownloadTemplate()}
                   />
                 </div>
               </div>
 
               <main className="mx-auto w-full max-w-[1520px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-5 xl:px-7 lg:py-6">
-          {isTabLoading ? (
-            <TabLoadingView targetTab={activeTab} />
-          ) : !activeDataset || !analysis || !simulation || !candidateOffer ? (
+          {!activeDataset || !analysis || !candidateOffer ? (
             <motion.div
               key={`empty-${activeTab}`}
               initial={{ opacity: 0, y: 6 }}
@@ -559,44 +586,46 @@ export default function App() {
                 />
               )}
 
-              {activeTab === 'normalitas' && (
-                <NormalitasTab
-                  normalityRaw={analysis.normalityRaw}
-                  normalityLog={analysis.normalityLog}
-                  logTransform={logTransform}
-                  onToggleLogTransform={() => setLogTransform((prev) => !prev)}
-                  onNavigateTab={handleSelectTab}
-                />
-              )}
+              <Suspense fallback={<TabLoadingView targetTab={activeTab} />}>
+                {activeTab === 'normalitas' && (
+                  <NormalitasTab
+                    normalityRaw={analysis.normalityRaw}
+                    normalityLog={analysis.normalityLog}
+                    logTransform={logTransform}
+                    onToggleLogTransform={() => setLogTransform((prev) => !prev)}
+                    onNavigateTab={handleSelectTab}
+                  />
+                )}
 
-              {activeTab === 'homogenitas' && (
-                <HomogenitasTab
-                  homogeneity={analysis.homogeneity}
-                  groupColumnLabel={mapping.groupCol}
-                  onNavigateTab={handleSelectTab}
-                />
-              )}
+                {activeTab === 'homogenitas' && (
+                  <HomogenitasTab
+                    homogeneity={analysis.homogeneity}
+                    groupColumnLabel={mapping.groupCol}
+                    onNavigateTab={handleSelectTab}
+                  />
+                )}
 
-              {activeTab === 'linearitas' && (
-                <LinearitasSimulasiTab
-                  subsidyPct={subsidyPct}
-                  loyaltyPct={loyaltyPct}
-                  onChangeSubsidy={setSubsidyPct}
-                  onChangeLoyalty={setLoyaltyPct}
-                  onResetSimulation={() => {
-                    setSubsidyPct(0);
-                    setLoyaltyPct(0);
-                    showToast('Parameter simulasi direset', 'Subsidi dan bonus kembali ke 0%.', 'info');
-                  }}
-                  simulation={simulation}
-                  linearity={analysis.linearity}
-                  candidateYears={candidateYears}
-                  onChangeCandidateYears={setCandidateYears}
-                  candidateOffer={candidateOffer}
-                  experienceLabel={mapping.experienceCol}
-                  onNavigateTab={handleSelectTab}
-                />
-              )}
+                {activeTab === 'linearitas' && simulation && (
+                  <LinearitasSimulasiTab
+                    subsidyPct={subsidyPct}
+                    loyaltyPct={loyaltyPct}
+                    onChangeSubsidy={setSubsidyPct}
+                    onChangeLoyalty={setLoyaltyPct}
+                    onResetSimulation={() => {
+                      setSubsidyPct(0);
+                      setLoyaltyPct(0);
+                      showToast('Parameter simulasi direset', 'Subsidi dan bonus kembali ke 0%.', 'info');
+                    }}
+                    simulation={simulation}
+                    linearity={analysis.linearity}
+                    candidateYears={candidateYears}
+                    onChangeCandidateYears={setCandidateYears}
+                    candidateOffer={candidateOffer}
+                    experienceLabel={mapping.experienceCol}
+                    onNavigateTab={handleSelectTab}
+                  />
+                )}
+              </Suspense>
             </motion.div>
           )}
         </main>
@@ -607,9 +636,9 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Interactive Modals */}
-      {activeDataset && (
-        <>
+      {/* Interactive Modals (lazy-loaded & mounted only when opened) */}
+      {activeDataset && filterModalOpen && (
+        <Suspense fallback={null}>
           <FilterModal
             open={filterModalOpen}
             onClose={() => setFilterModalOpen(false)}
@@ -625,7 +654,11 @@ export default function App() {
               setFilters({ departments: [], groups: [] });
             }}
           />
+        </Suspense>
+      )}
 
+      {activeDataset && rawDataModalOpen && (
+        <Suspense fallback={null}>
           <RawDataModal
             open={rawDataModalOpen}
             onClose={() => setRawDataModalOpen(false)}
@@ -633,14 +666,18 @@ export default function App() {
             columns={activeDataset.columns}
             rows={cleaned.records.map((r) => r.raw)}
           />
-        </>
+        </Suspense>
       )}
 
-      <UploadModal
-        open={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        onDatasetLoaded={handleUploadedDataset}
-      />
+      {uploadModalOpen && (
+        <Suspense fallback={null}>
+          <UploadModal
+            open={uploadModalOpen}
+            onClose={() => setUploadModalOpen(false)}
+            onDatasetLoaded={handleUploadedDataset}
+          />
+        </Suspense>
+      )}
 
       <ToastNotice toast={toast} onDismiss={() => setToast(null)} />
     </div>

@@ -1,5 +1,4 @@
-import * as XLSX from 'xlsx';
-import ExcelJS from 'exceljs';
+import type ExcelJS from 'exceljs';
 import type {
   AnalysisBundle,
   ColumnMapping,
@@ -8,12 +7,6 @@ import type {
   SimulationResult,
 } from '../types/fairpay';
 import { detectColumnMapping } from './datasets';
-import {
-  renderDepartmentBarChartPng,
-  renderGroupBoxplotChartPng,
-  renderNormalityHistogramPng,
-  renderSimulationComparisonPng,
-} from './reportCharts';
 
 function triggerBlobDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
@@ -86,7 +79,7 @@ function addBannerTitle(
  * Parse user-uploaded CSV or Excel (.xlsx / .xls) file into a DatasetBundle
  */
 export async function parseUploadedSpreadsheet(file: File): Promise<DatasetBundle> {
-  const buffer = await file.arrayBuffer();
+  const [buffer, XLSX] = await Promise.all([file.arrayBuffer(), import('xlsx')]);
   const workbook = XLSX.read(buffer, { type: 'array' });
   const firstSheetName = workbook.SheetNames[0];
   if (!firstSheetName) {
@@ -146,6 +139,7 @@ export async function downloadExcelTemplate(): Promise<void> {
     { JobTitle: 'HR Manager', Gender: 'Wanita', Age: 44, PerfEval: 5, Education: 'Masters', Dept: 'Human Resources', YearsExperience: 14.5, BasePay: 86000, Bonus: 8900 },
   ];
 
+  const { default: ExcelJS } = await import('exceljs');
   const wb = new ExcelJS.Workbook();
   wb.creator = 'FairPay — HR Equity Auditor';
   wb.created = new Date();
@@ -275,6 +269,16 @@ export async function exportAuditReportXlsx(params: ExportAuditReportParams): Pr
     offerUpper,
     rows,
   } = params;
+
+  const [
+    { default: ExcelJS },
+    {
+      renderDepartmentBarChartPng,
+      renderGroupBoxplotChartPng,
+      renderNormalityHistogramPng,
+      renderSimulationComparisonPng,
+    },
+  ] = await Promise.all([import('exceljs'), import('./reportCharts')]);
 
   const wb = new ExcelJS.Workbook();
   wb.creator = 'FairPay — HR Equity Auditor';

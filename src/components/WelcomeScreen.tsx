@@ -40,20 +40,12 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
       className="flex min-h-screen flex-col bg-gradient-to-br from-[#F4F7FE] via-[#FAFBFD] to-[#FFFFFF] text-[#0F172A]"
     >
       {/* Minimalist Top Bar */}
-      <header className="w-full border-b border-[#E7EDF8] bg-white/85 backdrop-blur-md">
+      <header className="w-full border-b border-[#E7EDF8] bg-white/95">
         <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-10">
           <div className="flex items-center gap-3 shrink-0">
             <BrandLogo variant="color" className="h-[28px] w-[36px] shrink-0" />
             <span className="font-display text-[19px] font-bold tracking-tight text-[#0B1221] whitespace-nowrap">
               FairPay
-            </span>
-          </div>
-
-          <div className="hidden sm:flex items-center gap-2 text-[12.5px] text-[#64748B] whitespace-nowrap">
-            <span>HR Equity Auditor</span>
-            <span aria-hidden="true">·</span>
-            <span className="font-mono text-[11.5px] text-[#475569]">
-              Probabilitas &amp; Statistika
             </span>
           </div>
         </div>

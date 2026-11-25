@@ -83,11 +83,11 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           opacity: isInverted ? 0.24 : 0.14,
         }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-none absolute h-64 w-64 rounded-full blur-3xl"
+        className="pointer-events-none absolute h-80 w-80 rounded-full"
         style={{
           background: isInverted
-            ? 'radial-gradient(circle, rgba(96,165,250,0.45) 0%, rgba(12,43,126,0) 70%)'
-            : 'radial-gradient(circle, rgba(16,85,237,0.32) 0%, rgba(255,255,255,0) 70%)',
+            ? 'radial-gradient(circle, rgba(96,165,250,0.4) 0%, rgba(12,43,126,0) 70%)'
+            : 'radial-gradient(circle, rgba(16,85,237,0.28) 0%, rgba(255,255,255,0) 70%)',
         }}
       />
 

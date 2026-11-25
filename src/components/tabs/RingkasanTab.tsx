@@ -345,7 +345,7 @@ export function RingkasanTab({
       <RevealUp delay={0.28} y={18}>
         <section
           aria-label="Status tiga mesin diagnosis statistik"
-          className="fairpay-card rounded-2xl border border-[#E9EEF7] bg-white/85 backdrop-blur-xs px-6 py-5 sm:px-7 sm:py-6 shadow-[0_2px_16px_rgba(12,43,126,0.03)]"
+          className="fairpay-card rounded-2xl border border-[#E9EEF7] bg-white/95 px-6 py-5 sm:px-7 sm:py-6 shadow-[0_2px_16px_rgba(12,43,126,0.03)]"
         >
           <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div className="shrink-0 xl:pr-6">

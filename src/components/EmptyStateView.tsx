@@ -1,7 +1,6 @@
 import { ArrowRight, Database, FileSpreadsheet, Sparkles, Upload } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { DatasetKey, TabId } from '../types/fairpay';
-import { downloadExcelTemplate } from '../lib/excel';
 import { RevealUp, TypingHeading } from './MotionPrimitives';
 
 interface EmptyStateViewProps {
@@ -69,7 +68,7 @@ export function EmptyStateView({
 
       {/* Empty Canvas Card */}
       <RevealUp delay={0.14} y={18}>
-        <section className="fairpay-card rounded-2xl border border-dashed border-[#CBD5E1] bg-white/75 backdrop-blur-xs p-6 sm:p-10 shadow-[0_2px_18px_rgba(12,43,126,0.03)]">
+        <section className="fairpay-card rounded-2xl border border-dashed border-[#CBD5E1] bg-white/92 p-6 sm:p-10 shadow-[0_2px_18px_rgba(12,43,126,0.03)]">
           <div className="mx-auto flex max-w-xl flex-col items-center text-center">
             <motion.div
               initial={{ scale: 0.88, opacity: 0 }}
@@ -105,7 +104,9 @@ export function EmptyStateView({
                 whileHover={{ y: -1.5 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() =>
-                  onDownloadTemplate ? onDownloadTemplate() : void downloadExcelTemplate()
+                  onDownloadTemplate
+                    ? onDownloadTemplate()
+                    : void import('../lib/excel').then((m) => m.downloadExcelTemplate())
                 }
                 className="inline-flex items-center gap-2 rounded-xl border border-[#D5DCE8] bg-white px-4 py-2.5 text-[13.5px] font-medium text-[#334155] transition-colors hover:bg-[#F3F5F9] hover:text-[#0F172A] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF]"
               >
@@ -143,7 +144,7 @@ export function EmptyStateView({
               />
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -bottom-12 right-8 h-28 w-28 rounded-full bg-[#60A5FA]/20 blur-2xl"
+                className="pointer-events-none absolute -bottom-12 right-6 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(96,165,250,0.26)_0%,transparent_70%)]"
               />
 
               <div className="relative z-10">
@@ -151,7 +152,7 @@ export function EmptyStateView({
                   <span className="font-mono text-[10.5px] font-semibold tracking-[0.08em] text-[#BFDBFE] uppercase">
                     Kaggle Public Dataset
                   </span>
-                  <span className="rounded-lg bg-white/14 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white backdrop-blur-xs tabular-nums">
+                  <span className="rounded-lg bg-white/15 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white tabular-nums">
                     1.000 baris · 9 kolom
                   </span>
                 </div>
@@ -188,7 +189,7 @@ export function EmptyStateView({
               />
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -top-10 left-1/2 h-28 w-28 rounded-full bg-[#93C5FD]/22 blur-2xl"
+                className="pointer-events-none absolute -top-10 left-1/2 h-36 w-36 rounded-full bg-[radial-gradient(circle,rgba(147,197,253,0.28)_0%,transparent_70%)]"
               />
 
               <div className="relative z-10">
@@ -196,7 +197,7 @@ export function EmptyStateView({
                   <span className="font-mono text-[10.5px] font-semibold tracking-[0.08em] text-[#DBEAFE] uppercase">
                     Kaggle Public Dataset
                   </span>
-                  <span className="rounded-lg bg-white/16 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white backdrop-blur-xs tabular-nums">
+                  <span className="rounded-lg bg-white/16 px-2.5 py-0.5 font-mono text-[11px] font-medium text-white tabular-nums">
                     375 baris · 6 kolom
                   </span>
                 </div>
