@@ -3,9 +3,27 @@ import { createPortal } from 'react-dom';
 import { CircleAlert, GraduationCap, Users, X } from 'lucide-react';
 
 const DEVELOPERS = [
-  { name: 'Mohamad Firdiansyah', nim: '2402041' },
-  { name: 'Ikbal Miftahudin', nim: '2401426' },
-  { name: 'Dwi Rasyah Anandifa Kautsar', nim: '2401300' },
+  {
+    name: 'Mohamad Firdiansyah',
+    role: 'UI/UX Driven',
+    nim: '2402041',
+    badgeClass: 'border-[#CFE0FF] bg-[#EEF4FF] text-[#1562FF]',
+    dotClass: 'bg-[#1562FF]',
+  },
+  {
+    name: 'Ikbal Miftahudin',
+    role: 'QA',
+    nim: '2401426',
+    badgeClass: 'border-[#C6F1E0] bg-[#ECFDF5] text-[#047857]',
+    dotClass: 'bg-[#059669]',
+  },
+  {
+    name: 'Dwi Rasyah Anandifa Kautsar',
+    role: 'Product Manager',
+    nim: '2401300',
+    badgeClass: 'border-[#D7DAFF] bg-[#F1F2FF] text-[#3730A3]',
+    dotClass: 'bg-[#4F46E5]',
+  },
 ];
 
 const LECTURER = {
@@ -38,7 +56,7 @@ export function AppFooter() {
     if (mobile) return;
 
     const rect = triggerRef.current.getBoundingClientRect();
-    const cardW = Math.min(372, vw - 24);
+    const cardW = Math.min(388, vw - 24);
     const idealLeft = rect.left + rect.width / 2 - cardW / 2;
     const clampedLeft = Math.max(12, Math.min(vw - cardW - 12, idealLeft));
     setCoords({
@@ -138,15 +156,25 @@ export function AppFooter() {
       <div className="rounded-xl border border-[#E5ECF7] bg-[#F8FAFF] p-3.5">
         <div className="flex items-center gap-1.5 font-mono text-[10px] font-semibold tracking-[0.1em] text-[#0C2B7E] uppercase">
           <Users className="h-3.5 w-3.5 text-[#1562FF]" />
-          <span>Nama &amp; NIM Pengembang</span>
+          <span>Tim Pengembang</span>
         </div>
         <ul className="mt-2.5 divide-y divide-[#E6EDF8]">
           {DEVELOPERS.map((dev) => (
             <li
               key={dev.nim}
-              className="flex items-center justify-between gap-3 py-2 first:pt-0 last:pb-0 text-[12.5px]"
+              className="flex items-center justify-between gap-3 py-2.5 first:pt-0 last:pb-0"
             >
-              <span className="font-semibold text-[#0F172A]">{dev.name}</span>
+              <div className="min-w-0">
+                <div className="text-[12.5px] font-semibold text-[#0F172A] leading-snug">
+                  {dev.name}
+                </div>
+                <span
+                  className={`mt-1 inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[10.5px] font-semibold tracking-tight leading-none ${dev.badgeClass}`}
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${dev.dotClass}`} aria-hidden="true" />
+                  {dev.role}
+                </span>
+              </div>
               <span className="shrink-0 rounded-md bg-[#E8F0FF] px-2 py-0.5 font-mono text-[11px] font-semibold text-[#1562FF] tabular-nums">
                 {dev.nim}
               </span>
@@ -172,8 +200,8 @@ export function AppFooter() {
   );
 
   return (
-    <footer className="mt-auto border-t border-[#E6EDF8]/75 bg-white/55 backdrop-blur-sm px-4 py-4 sm:px-6 lg:px-5">
-      <div className="mx-auto flex w-full max-w-[1160px] flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
+    <footer className="mt-auto border-t border-[#E6EDF8]/75 bg-white/55 backdrop-blur-sm px-4 py-4 sm:px-6 lg:px-5 xl:px-7">
+      <div className="mx-auto flex w-full max-w-[1520px] flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
         <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[#64748B] sm:justify-start">
           <span>&copy; 2026</span>
           <strong className="font-semibold text-[#0F172A]">Kelompok Gemini Stats 5A</strong>

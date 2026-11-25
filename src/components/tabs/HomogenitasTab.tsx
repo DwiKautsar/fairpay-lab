@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, ShieldCheck } from 'lucide-react';
 import type { HomogeneityResult, TabId } from '../../types/fairpay';
 import {
@@ -9,6 +10,7 @@ import {
   formatSalaryKWhole,
 } from '../../lib/format';
 import { FormulaInfoButton } from '../FormulaInfoButton';
+import { RevealUp, TypingHeading } from '../MotionPrimitives';
 
 interface HomogenitasTabProps {
   homogeneity: HomogeneityResult;
@@ -50,65 +52,75 @@ export function HomogenitasTab({
     <div className="space-y-5 sm:space-y-6">
       {/* Header */}
       <div className="max-w-2xl">
-        <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
-          UJI 02 · LEVENE
-        </div>
-        <h1 className="mt-2 text-[25px] sm:text-[31px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]">
-          Apakah rentang upah antarkelompok setara?
-        </h1>
-        <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">
-          Bandingkan konsistensi variasi gaji berdasarkan {groupNameClean} untuk menemukan standar
-          pengupahan yang timpang.
-        </p>
+        <RevealUp y={10} delay={0.02}>
+          <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
+            UJI 02 · LEVENE
+          </div>
+        </RevealUp>
+        <TypingHeading
+          text="Apakah rentang upah antarkelompok setara?"
+          speedMs={36}
+          delayMs={160}
+          className="mt-2 text-[25px] sm:text-[31px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]"
+        />
+        <RevealUp y={10} delay={0.1}>
+          <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">
+            Bandingkan konsistensi variasi gaji berdasarkan {groupNameClean} untuk menemukan standar
+            pengupahan yang timpang.
+          </p>
+        </RevealUp>
       </div>
 
       {/* Stat + Verdict Card */}
-      <section className="rounded-2xl bg-[#F8F9FC] overflow-hidden">
-        <div className="grid grid-cols-2 lg:grid-cols-[190px_190px_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#E6EAF2]">
-          <div className="p-5 sm:p-6 border-r border-[#E6EAF2] lg:border-r-0">
-            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
-              <span>Statistik F</span>
-              <FormulaInfoButton formulaId="leveneTest" />
+      <RevealUp delay={0.08}>
+        <section className="fairpay-card-subtle rounded-2xl bg-[#F8F9FC] overflow-hidden">
+          <div className="grid grid-cols-2 xl:grid-cols-[190px_190px_1fr] divide-y xl:divide-y-0 xl:divide-x divide-[#E6EAF2]">
+            <div className="p-5 sm:p-6 border-r border-[#E6EAF2] xl:border-r-0">
+              <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+                <span>Statistik F</span>
+                <FormulaInfoButton formulaId="leveneTest" />
+              </div>
+              <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
+                {formatDecimalComma(homogeneity.fStatistic, 3)}
+              </div>
             </div>
-            <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
-              {formatDecimalComma(homogeneity.fStatistic, 3)}
-            </div>
-          </div>
 
-          <div className="p-5 sm:p-6">
-            <div className="text-[12.5px] font-medium text-[#64748B]">p-value</div>
-            <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
-              {formatPValueFull(homogeneity.pValue, true)}
+            <div className="p-5 sm:p-6">
+              <div className="text-[12.5px] font-medium text-[#64748B]">p-value</div>
+              <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
+                {formatPValueFull(homogeneity.pValue, true)}
+              </div>
             </div>
-          </div>
 
-          <div className="col-span-2 lg:col-span-1 flex flex-col sm:flex-row sm:items-center gap-3.5 p-5 sm:p-6">
-            <span
-              className={`inline-flex items-center gap-1.5 self-start sm:self-center rounded-full px-3 py-1.5 font-mono text-[11.5px] font-semibold whitespace-nowrap shrink-0 ${
-                homogeneity.isHomogeneous
-                  ? 'bg-[#E6F8F1] text-[#059669]'
-                  : 'bg-[#FDECEC] text-[#DC2626]'
-              }`}
-            >
+            <div className="col-span-2 xl:col-span-1 flex flex-col sm:flex-row sm:items-center gap-3.5 p-5 sm:p-6">
               <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  homogeneity.isHomogeneous ? 'bg-[#059669]' : 'bg-[#DC2626]'
+                className={`inline-flex items-center gap-1.5 self-start sm:self-center rounded-full px-3 py-1.5 font-mono text-[11.5px] font-semibold whitespace-nowrap shrink-0 ${
+                  homogeneity.isHomogeneous
+                    ? 'bg-[#E6F8F1] text-[#059669]'
+                    : 'bg-[#FDECEC] text-[#DC2626]'
                 }`}
-                aria-hidden="true"
-              />
-              {homogeneity.isHomogeneous ? 'Varians homogen' : 'Varians heterogen'}
-            </span>
-            <p className="text-[13.5px] text-[#475569] leading-relaxed">
-              {homogeneity.isHomogeneous
-                ? 'p-value ≥ 0,05. Rentang variasi gaji antarkelompok setara dan konsisten.'
-                : 'p-value < 0,05. Rentang gaji antarkelompok berbeda secara signifikan.'}
-            </p>
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    homogeneity.isHomogeneous ? 'bg-[#059669]' : 'bg-[#DC2626]'
+                  }`}
+                  aria-hidden="true"
+                />
+                {homogeneity.isHomogeneous ? 'Varians homogen' : 'Varians heterogen'}
+              </span>
+              <p className="text-[13.5px] text-[#475569] leading-relaxed">
+                {homogeneity.isHomogeneous
+                  ? 'p-value ≥ 0,05. Rentang variasi gaji antarkelompok setara dan konsisten.'
+                  : 'p-value < 0,05. Rentang gaji antarkelompok berbeda secara signifikan.'}
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </RevealUp>
 
       {/* Main Boxplot Comparison Card */}
-      <section className="rounded-2xl border border-[#EEF1F7] bg-white p-6 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
+      <RevealUp delay={0.15}>
+        <section className="fairpay-card rounded-2xl border border-[#EEF1F7] bg-white p-6 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
@@ -207,8 +219,15 @@ export function HomogenitasTab({
                   const isHovered = hoveredGroup === g.group;
 
                   return (
-                    <g
+                    <motion.g
                       key={g.group}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.5,
+                        delay: 0.14 + idx * 0.06,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
                       className="cursor-pointer"
                       onMouseEnter={() => setHoveredGroup(g.group)}
                       onMouseLeave={() => setHoveredGroup(null)}
@@ -299,23 +318,26 @@ export function HomogenitasTab({
                       >
                         n = {formatIntegerId(g.count)} · median {formatSalaryKComma(g.median, 1)}
                       </text>
-                    </g>
+                    </motion.g>
                   );
                 })}
               </svg>
             </div>
           )}
         </div>
-      </section>
+        </section>
+      </RevealUp>
 
       {/* Footer Method Note matching screenshot */}
-      <div className="flex items-start gap-2.5 text-[13px] text-[#64748B]">
-        <ShieldCheck className="h-[18px] w-[18px] shrink-0 text-[#1562FF] mt-0.5" />
-        <p className="leading-relaxed">
-          <strong className="font-semibold text-[#0F172A]">Catatan metode</strong> Levene&apos;s Test
-          dipilih karena lebih robust terhadap data yang tidak normal dibanding Bartlett&apos;s Test.
-        </p>
-      </div>
+      <RevealUp delay={0.22} y={12}>
+        <div className="flex items-start gap-2.5 text-[13px] text-[#64748B]">
+          <ShieldCheck className="h-[18px] w-[18px] shrink-0 text-[#1562FF] mt-0.5" />
+          <p className="leading-relaxed">
+            <strong className="font-semibold text-[#0F172A]">Catatan metode</strong> Levene&apos;s Test
+            dipilih karena lebih robust terhadap data yang tidak normal dibanding Bartlett&apos;s Test.
+          </p>
+        </div>
+      </RevealUp>
 
       {/* Guided Audit Flow Footer */}
       {onNavigateTab && (

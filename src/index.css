@@ -180,3 +180,69 @@ input[type="range"].fairpay-slider::-moz-range-thumb {
     radial-gradient(75% 42% at 100% 78%, rgba(21, 98, 255, 0.16) 0%, rgba(12, 43, 126, 0) 58%),
     linear-gradient(180deg, #0D2E87 0%, #0C2B7E 56%, #092269 100%);
 }
+
+/* Subtle, smooth, UX-friendly card micro-interactions */
+.fairpay-card {
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.fairpay-card:hover {
+  transform: translateY(-2.5px);
+  border-color: #CBD9F6;
+  box-shadow:
+    0 12px 28px -10px rgba(12, 43, 126, 0.1),
+    0 4px 12px -4px rgba(21, 98, 255, 0.06);
+}
+
+.fairpay-card-subtle {
+  border: 1px solid rgba(226, 232, 240, 0.72);
+  transition:
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms ease,
+    background-color 220ms ease;
+}
+
+.fairpay-card-subtle:hover {
+  transform: translateY(-2px);
+  border-color: #CFDDF7;
+  box-shadow: 0 10px 24px -10px rgba(12, 43, 126, 0.08);
+}
+
+.fairpay-card-navy {
+  transition:
+    transform 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.fairpay-card-navy:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 22px 46px -12px rgba(12, 43, 126, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.fairpay-tile {
+  transition:
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 200ms ease,
+    box-shadow 220ms ease;
+}
+
+.fairpay-tile:hover {
+  transform: translateY(-1.5px);
+  background-color: rgba(238, 244, 255, 0.58);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fairpay-card:hover,
+  .fairpay-card-subtle:hover,
+  .fairpay-card-navy:hover,
+  .fairpay-tile:hover {
+    transform: none;
+  }
+}

@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
 import type { NormalityResult, TabId } from '../../types/fairpay';
 import { formatDecimalComma, formatIntegerId, formatPValueFull } from '../../lib/format';
 import { FormulaInfoButton } from '../FormulaInfoButton';
+import { RevealUp, TypingHeading } from '../MotionPrimitives';
 
 interface NormalitasTabProps {
   normalityRaw: NormalityResult;
@@ -98,21 +100,26 @@ export function NormalitasTab({
   return (
     <div className="space-y-6 sm:space-y-7">
       {/* Header + Log Transform Toggle */}
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
-            UJI 01 · SHAPIRO-WILK
-          </div>
-          <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]">
-            Apakah sebaran gaji wajar?
-          </h1>
-          <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">
-            Menguji apakah distribusi gaji mengikuti pola normal dan tidak didominasi nilai ekstrem.
-          </p>
+          <RevealUp y={10} delay={0.02}>
+            <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
+              UJI 01 · SHAPIRO-WILK
+            </div>
+          </RevealUp>
+          <TypingHeading
+            text="Apakah sebaran gaji wajar?"
+            className="mt-2 text-[26px] sm:text-[32px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]"
+          />
+          <RevealUp y={10} delay={0.1}>
+            <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">
+              Menguji apakah distribusi gaji mengikuti pola normal dan tidak didominasi nilai ekstrem.
+            </p>
+          </RevealUp>
         </div>
 
         {/* Interactive Log Transformation Toggle Card + Formula Info */}
-        <div className="inline-flex items-center gap-2 self-start sm:self-end shrink-0">
+        <RevealUp y={12} delay={0.12} className="inline-flex items-center gap-2 self-start md:self-end shrink-0">
           <button
             type="button"
             role="switch"
@@ -141,7 +148,7 @@ export function NormalitasTab({
             </div>
           </button>
           <FormulaInfoButton formulaId="logTransform" size="md" />
-        </div>
+        </RevealUp>
       </div>
 
       {/* Stratified Sampling Notice if N > 5,000 (PRD Section 6.1) */}
@@ -157,56 +164,59 @@ export function NormalitasTab({
       )}
 
       {/* Main Stat + Verdict Card */}
-      <section className="rounded-2xl bg-[#F8F9FC] overflow-hidden">
-        <div className="grid grid-cols-2 lg:grid-cols-[190px_190px_1fr] divide-y lg:divide-y-0 lg:divide-x divide-[#E6EAF2]">
-          <div className="p-5 sm:p-6 border-r border-[#E6EAF2] lg:border-r-0">
-            <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
-              <span>Statistik W</span>
-              <FormulaInfoButton formulaId="shapiroWilk" />
+      <RevealUp delay={0.08}>
+        <section className="fairpay-card-subtle rounded-2xl bg-[#F8F9FC] overflow-hidden">
+          <div className="grid grid-cols-2 xl:grid-cols-[190px_190px_1fr] divide-y xl:divide-y-0 xl:divide-x divide-[#E6EAF2]">
+            <div className="p-5 sm:p-6 border-r border-[#E6EAF2] xl:border-r-0">
+              <div className="flex items-center gap-1.5 text-[12.5px] font-medium text-[#64748B]">
+                <span>Statistik W</span>
+                <FormulaInfoButton formulaId="shapiroWilk" />
+              </div>
+              <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
+                {formatDecimalComma(active.wStatistic, 3)}
+              </div>
             </div>
-            <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
-              {formatDecimalComma(active.wStatistic, 3)}
-            </div>
-          </div>
 
-          <div className="p-5 sm:p-6">
-            <div className="text-[12.5px] font-medium text-[#64748B]">p-value</div>
-            <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
-              {formatPValueFull(active.pValue, true)}
+            <div className="p-5 sm:p-6">
+              <div className="text-[12.5px] font-medium text-[#64748B]">p-value</div>
+              <div className="mt-1.5 font-mono text-[28px] sm:text-[31px] font-semibold tracking-tight text-[#0F172A] tabular-nums">
+                {formatPValueFull(active.pValue, true)}
+              </div>
             </div>
-          </div>
 
-          <div className="col-span-2 lg:col-span-1 flex flex-col sm:flex-row sm:items-center gap-3.5 p-5 sm:p-6">
-            <span
-              className={`inline-flex items-center gap-1.5 self-start sm:self-center rounded-full px-3 py-1.5 font-mono text-[11.5px] font-semibold whitespace-nowrap shrink-0 ${
-                active.isNormal
-                  ? 'bg-[#E6F8F1] text-[#059669]'
-                  : 'bg-[#FDECEC] text-[#DC2626]'
-              }`}
-            >
+            <div className="col-span-2 xl:col-span-1 flex flex-col sm:flex-row sm:items-center gap-3.5 p-5 sm:p-6">
               <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  active.isNormal ? 'bg-[#059669]' : 'bg-[#DC2626]'
+                className={`inline-flex items-center gap-1.5 self-start sm:self-center rounded-full px-3 py-1.5 font-mono text-[11.5px] font-semibold whitespace-nowrap shrink-0 ${
+                  active.isNormal
+                    ? 'bg-[#E6F8F1] text-[#059669]'
+                    : 'bg-[#FDECEC] text-[#DC2626]'
                 }`}
-                aria-hidden="true"
-              />
-              {active.isNormal ? 'Distribusi normal' : 'Distribusi tidak normal'}
-            </span>
-            <p className="text-[13.5px] text-[#475569] leading-relaxed">
-              {active.isNormal
-                ? logTransform
-                  ? 'Setelah transformasi, data memenuhi asumsi normalitas (p ≥ 0,05).'
-                  : 'p-value ≥ 0,05. Sebaran gaji mengikuti pola distribusi normal.'
-                : 'p-value < 0,05. Ada bukti kuat distribusi gaji tidak normal.'}
-            </p>
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    active.isNormal ? 'bg-[#059669]' : 'bg-[#DC2626]'
+                  }`}
+                  aria-hidden="true"
+                />
+                {active.isNormal ? 'Distribusi normal' : 'Distribusi tidak normal'}
+              </span>
+              <p className="text-[13.5px] text-[#475569] leading-relaxed">
+                {active.isNormal
+                  ? logTransform
+                    ? 'Setelah transformasi, data memenuhi asumsi normalitas (p ≥ 0,05).'
+                    : 'p-value ≥ 0,05. Sebaran gaji mengikuti pola distribusi normal.'
+                  : 'p-value < 0,05. Ada bukti kuat distribusi gaji tidak normal.'}
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </RevealUp>
 
       {/* Charts Grid: Histogram + Q-Q Plot */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.35fr_1fr]">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.35fr_1fr]">
         {/* Left: Histogram with Normal Bell Curve */}
-        <section className="rounded-2xl border border-[#EEF1F7] bg-white p-6 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
+        <RevealUp delay={0.14}>
+          <section className="fairpay-card h-full rounded-2xl border border-[#EEF1F7] bg-white p-6 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
           <div className="flex items-start justify-between gap-3">
             <div>
               <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
@@ -261,14 +271,19 @@ export function NormalitasTab({
                 const y = histPad.top + plotH - bh;
                 const isHover = hoveredBin === idx;
                 return (
-                  <rect
-                    key={idx}
+                  <motion.rect
+                    key={`${logTransform ? 'log' : 'raw'}-${idx}`}
                     x={x}
-                    y={y}
                     width={Math.max(4, bw - gap)}
-                    height={bh}
                     rx="2"
                     fill={isHover ? '#B8D1FF' : '#D9E6FF'}
+                    initial={{ y: histPad.top + plotH, height: 0 }}
+                    animate={{ y, height: bh }}
+                    transition={{
+                      duration: 0.52,
+                      delay: 0.1 + idx * 0.016,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
                     className="transition-colors duration-150 cursor-pointer"
                     onMouseEnter={() => setHoveredBin(idx)}
                     onMouseLeave={() => setHoveredBin(null)}
@@ -278,13 +293,17 @@ export function NormalitasTab({
 
               {/* Smooth Normal Curve Overlay */}
               {curvePath && (
-                <path
+                <motion.path
+                  key={logTransform ? 'curve-log' : 'curve-raw'}
                   d={curvePath}
                   fill="none"
                   stroke="#1562FF"
                   strokeWidth="2.8"
                   strokeLinecap="round"
                   strokeLinejoin="round"
+                  initial={{ pathLength: 0, opacity: 0.35 }}
+                  animate={{ pathLength: 1, opacity: 1 }}
+                  transition={{ duration: 0.85, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
                   className="pointer-events-none"
                 />
               )}
@@ -303,10 +322,12 @@ export function NormalitasTab({
               ))}
             </svg>
           </div>
-        </section>
+          </section>
+        </RevealUp>
 
         {/* Right: Q-Q Plot */}
-        <section className="rounded-2xl border border-[#EEF1F7] bg-white p-6 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
+        <RevealUp delay={0.2}>
+          <section className="fairpay-card h-full rounded-2xl border border-[#EEF1F7] bg-white p-6 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
           <div>
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
               Q-Q PLOT
@@ -401,7 +422,8 @@ export function NormalitasTab({
               </text>
             </svg>
           </div>
-        </section>
+          </section>
+        </RevealUp>
       </div>
 
       {/* Guided Audit Flow Footer */}

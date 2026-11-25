@@ -381,7 +381,11 @@ export default function App() {
 
       <AnimatePresence mode="wait">
         {appStage === 'welcome' && (
-          <WelcomeScreen key="welcome" onEnterDashboard={handleEnterDashboard} />
+          <WelcomeScreen
+            key="welcome"
+            isReady={!showSplash}
+            onEnterDashboard={handleEnterDashboard}
+          />
         )}
 
         {appStage === 'entering' && (
@@ -446,8 +450,8 @@ export default function App() {
 
             {/* Right Main Workspace */}
             <div className="flex min-w-0 flex-1 flex-col">
-              <div className="sticky top-0 z-20 w-full lg:px-5 lg:pt-2 lg:pb-1 lg:bg-gradient-to-b lg:from-[#F4F8FE]/95 lg:via-[#F7FAFF]/75 lg:to-transparent">
-                <div className="lg:mx-auto lg:w-full lg:max-w-[1160px]">
+              <div className="sticky top-0 z-20 w-full lg:px-5 xl:px-7 lg:pt-3.5 lg:pb-1 lg:bg-gradient-to-b lg:from-[#F4F8FE]/95 lg:via-[#F7FAFF]/75 lg:to-transparent">
+                <div className="mx-auto w-full max-w-[1520px]">
                   <TopBar
                     datasetName={activeDataset?.name ?? null}
                     hasDataset={Boolean(activeDataset)}
@@ -463,7 +467,7 @@ export default function App() {
                 </div>
               </div>
 
-              <main className="mx-auto w-full max-w-[1160px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-5 lg:py-5">
+              <main className="mx-auto w-full max-w-[1520px] flex-1 px-4 py-6 sm:px-6 sm:py-7 lg:px-5 xl:px-7 lg:py-6">
           {isTabLoading ? (
             <TabLoadingView targetTab={activeTab} />
           ) : !activeDataset || !analysis || !simulation || !candidateOffer ? (

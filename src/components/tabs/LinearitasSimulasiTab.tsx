@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'motion/react';
 import { ArrowLeft, ArrowRight, Check, RotateCcw, ShieldCheck } from 'lucide-react';
 import type {
   CandidateOfferResult,
@@ -17,6 +18,7 @@ import {
   formatSalaryKWhole,
 } from '../../lib/format';
 import { FormulaInfoButton } from '../FormulaInfoButton';
+import { RevealUp, TypingHeading } from '../MotionPrimitives';
 
 interface LinearitasSimulasiTabProps {
   subsidyPct: number;
@@ -97,29 +99,39 @@ export function LinearitasSimulasiTab({
   return (
     <div className="space-y-6">
       {/* Header Row */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
-            UJI 03 · LABORATORIUM KEBIJAKAN
-          </div>
-          <h1 className="mt-2 text-[26px] sm:text-[32px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]">
-            Uji kebijakan sebelum diterapkan.
-          </h1>
-          <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">
-            Geser parameter untuk melihat dampak penyesuaian terhadap keadilan gaji secara langsung.
-          </p>
+          <RevealUp y={10} delay={0.02}>
+            <div className="font-mono text-[11px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
+              UJI 03 · LABORATORIUM KEBIJAKAN
+            </div>
+          </RevealUp>
+          <TypingHeading
+            text="Uji kebijakan sebelum diterapkan."
+            speedMs={38}
+            delayMs={160}
+            className="mt-2 text-[26px] sm:text-[32px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]"
+          />
+          <RevealUp y={10} delay={0.1}>
+            <p className="mt-2 text-[14.5px] text-[#64748B] leading-relaxed">
+              Geser parameter untuk melihat dampak penyesuaian terhadap keadilan gaji secara langsung.
+            </p>
+          </RevealUp>
         </div>
 
-        <div className="inline-flex items-center gap-2 self-start sm:self-end rounded-full bg-[#E6F8F1] px-3.5 py-2 text-[12.5px] font-semibold text-[#059669] whitespace-nowrap shrink-0">
-          <ShieldCheck className="h-4 w-4 shrink-0" />
-          <span>Data asli tetap aman</span>
-        </div>
+        <RevealUp y={10} delay={0.12} className="self-start md:self-end shrink-0">
+          <div className="inline-flex items-center gap-2 rounded-full bg-[#E6F8F1] px-3.5 py-2 text-[12.5px] font-semibold text-[#059669] whitespace-nowrap">
+            <ShieldCheck className="h-4 w-4 shrink-0" />
+            <span>Data asli tetap aman</span>
+          </div>
+        </RevealUp>
       </div>
 
       {/* Main 2-Column Simulator Section */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_1.45fr] items-stretch">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1fr_1.45fr] items-stretch">
         {/* Left: Parameter Simulasi */}
-        <section className="flex flex-col justify-between rounded-2xl bg-[#F8F9FC] p-6 sm:p-7">
+        <RevealUp delay={0.08} className="flex flex-col">
+          <section className="fairpay-card-subtle flex flex-1 flex-col justify-between rounded-2xl bg-[#F8F9FC] p-6 sm:p-7">
           <div>
             <div className="flex items-center justify-between gap-2">
               <div>
@@ -259,10 +271,12 @@ export function LinearitasSimulasiTab({
               +{formatPercentDot(simulation.budgetPctIncrease, 1)} dari payroll saat ini
             </div>
           </div>
-        </section>
+          </section>
+        </RevealUp>
 
         {/* Right: Hasil Langsung (Before vs After) */}
-        <section className="flex flex-col justify-between rounded-2xl border border-[#EEF1F7] bg-white p-5 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
+        <RevealUp delay={0.14} className="flex flex-col">
+          <section className="fairpay-card flex flex-1 flex-col justify-between rounded-2xl border border-[#EEF1F7] bg-white p-5 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
           <div>
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -428,12 +442,14 @@ export function LinearitasSimulasiTab({
                     : 'Tingkatkan subsidi atau bonus loyalitas hingga kedua p-value melewati 0,05.'}
             </p>
           </div>
-        </section>
+          </section>
+        </RevealUp>
       </div>
 
       {/* Kalkulator Tawaran Card (PRD Section 4.5 Bagian C) */}
-      <section className="rounded-2xl bg-[#F8F9FC] p-6 sm:p-7">
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1.35fr_0.9fr_1fr] lg:items-center">
+      <RevealUp delay={0.06} inView>
+        <section className="fairpay-card-subtle rounded-2xl bg-[#F8F9FC] p-6 sm:p-7">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-[1.35fr_0.9fr_1fr] xl:items-center">
           <div>
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
               KALKULATOR TAWARAN
@@ -472,7 +488,7 @@ export function LinearitasSimulasiTab({
             </div>
           </div>
 
-          <div className="border-t border-[#E6EAF2] pt-5 lg:border-t-0 lg:border-l lg:pl-7 lg:pt-0">
+          <div className="border-t border-[#E6EAF2] pt-5 xl:border-t-0 xl:border-l xl:pl-7 xl:pt-0">
             <div className="text-[12.5px] font-medium text-[#64748B]">Rentang tawaran wajar</div>
             <div className="mt-1.5 font-mono text-[20px] sm:text-[22px] font-bold tracking-tight text-[#0C2B7E] tabular-nums whitespace-nowrap">
               {formatSalaryK(candidateOffer.lowerBound, 1)} &ndash;{' '}
@@ -483,10 +499,12 @@ export function LinearitasSimulasiTab({
             </div>
           </div>
         </div>
-      </section>
+        </section>
+      </RevealUp>
 
       {/* Uji Linearitas Regresi Card (PRD Section 4.5 Bagian A: Scatterplot Linear vs Quadratic + Deviation Test) */}
-      <section className="rounded-2xl border border-[#EEF1F7] bg-white p-6 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
+      <RevealUp delay={0.08} inView>
+        <section className="fairpay-card rounded-2xl border border-[#EEF1F7] bg-white p-6 sm:p-7 shadow-[0_2px_20px_rgba(15,23,42,0.035)]">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="font-mono text-[10.5px] font-semibold tracking-[0.12em] text-[#1562FF] uppercase">
@@ -634,32 +652,41 @@ export function LinearitasSimulasiTab({
               />
             ))}
 
-            {/* Quadratic Regression Curve */}
+            {/* Quadratic Regression Curve (keep strokeDasharray intact via opacity fade) */}
             {quadPath && (
-              <path
+              <motion.path
                 d={quadPath}
                 fill="none"
                 stroke="#7C3AED"
                 strokeWidth="2.2"
                 strokeDasharray="6 4"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true, amount: 'some' }}
+                transition={{ duration: 0.65, delay: 0.3, ease: 'easeOut' }}
                 className="pointer-events-none"
               />
             )}
 
             {/* Linear Regression Line */}
             {linearPath && (
-              <path
+              <motion.path
                 d={linearPath}
                 fill="none"
                 stroke="#1562FF"
                 strokeWidth="2.6"
                 strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0.35 }}
+                whileInView={{ pathLength: 1, opacity: 1 }}
+                viewport={{ once: true, amount: 'some' }}
+                transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
                 className="pointer-events-none"
               />
             )}
           </svg>
         </div>
-      </section>
+        </section>
+      </RevealUp>
 
       {/* Guided Step Footer */}
       {onNavigateTab && (
