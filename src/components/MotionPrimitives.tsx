@@ -76,20 +76,40 @@ export function TypingHeading({
     };
   }, [text, speedMs, delayMs, start]);
 
-  return (
-    <h1 className={`relative ${className}`} aria-label={text}>
-      {/* Invisible full-text mirror reserves exact multi-line height with zero layout shift */}
-      <span aria-hidden="true" className="invisible select-none block">
-        {text}
-      </span>
+  const isComplete = visibleCount >= text.length;
 
-      {/* Live typed overlay */}
-      <span aria-hidden="true" className="absolute inset-0 block">
-        {text.slice(0, visibleCount)}
-        {showCaret && (
-          <span className="fairpay-typing-caret ml-0.5 inline-block h-[0.86em] w-[2.5px] translate-y-[0.08em] rounded-full bg-[#1562FF]" />
-        )}
-      </span>
+  return (
+    <h1 className={className} aria-label={text}>
+      {isComplete && !showCaret ? (
+        text
+      ) : (
+        <span aria-hidden="true">
+          {visibleCount === 0 ? (
+            <>
+              <span className="relative">
+                <span className="invisible select-none">{text.slice(0, 1)}</span>
+                {showCaret && (
+                  <span className="fairpay-typing-caret pointer-events-none absolute left-0 top-[0.1em] h-[0.86em] w-[2.5px] rounded-full bg-[#1562FF]" />
+                )}
+              </span>
+              <span className="invisible select-none">{text.slice(1)}</span>
+            </>
+          ) : (
+            <>
+              {visibleCount > 1 && <span>{text.slice(0, visibleCount - 1)}</span>}
+              <span className="relative">
+                {text[visibleCount - 1]}
+                {showCaret && (
+                  <span className="fairpay-typing-caret pointer-events-none absolute -right-[2px] top-[0.1em] h-[0.86em] w-[2.5px] rounded-full bg-[#1562FF]" />
+                )}
+              </span>
+              {visibleCount < text.length && (
+                <span className="invisible select-none">{text.slice(visibleCount)}</span>
+              )}
+            </>
+          )}
+        </span>
+      )}
     </h1>
   );
 }
