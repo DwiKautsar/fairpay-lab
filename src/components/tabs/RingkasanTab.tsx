@@ -331,7 +331,7 @@ export function RingkasanTab({
               type="button"
               whileHover={{ y: -1.5 }}
               whileTap={{ scale: 0.985 }}
-              onClick={() => onNavigateTab('linearitas')}
+              onClick={() => onNavigateTab('simulasi')}
               className="relative z-10 mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-white px-4 py-3 text-[13.5px] font-bold text-[#0C2B7E] shadow-sm transition-colors hover:bg-[#F1F5FF] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               <span>Buka simulator kebijakan</span>

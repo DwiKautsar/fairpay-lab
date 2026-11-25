@@ -42,9 +42,14 @@ const NormalitasTab = lazy(() =>
 const HomogenitasTab = lazy(() =>
   import('./components/tabs/HomogenitasTab').then((m) => ({ default: m.HomogenitasTab }))
 );
-const LinearitasSimulasiTab = lazy(() =>
-  import('./components/tabs/LinearitasSimulasiTab').then((m) => ({
-    default: m.LinearitasSimulasiTab,
+const LinearitasTab = lazy(() =>
+  import('./components/tabs/LinearitasTab').then((m) => ({
+    default: m.LinearitasTab,
+  }))
+);
+const SimulasiTab = lazy(() =>
+  import('./components/tabs/SimulasiTab').then((m) => ({
+    default: m.SimulasiTab,
   }))
 );
 const FilterModal = lazy(() =>
@@ -320,9 +325,9 @@ export default function App() {
   const deferredLoyaltyPct = useDeferredValue(loyaltyPct);
   const deferredCandidateYears = useDeferredValue(candidateYears);
 
-  // Real-time policy simulation (computed only when Linearitas tab is active to save CPU on other tabs)
+  // Real-time policy simulation (computed only when Simulasi tab is active to save CPU on other tabs)
   const simulation = useMemo(() => {
-    if (!activeDataset || activeTab !== 'linearitas') return null;
+    if (!activeDataset || activeTab !== 'simulasi') return null;
     return runPolicySimulation(
       activeDataset.rows,
       mapping,
@@ -605,8 +610,16 @@ export default function App() {
                   />
                 )}
 
-                {activeTab === 'linearitas' && simulation && (
-                  <LinearitasSimulasiTab
+                {activeTab === 'linearitas' && (
+                  <LinearitasTab
+                    linearity={analysis.linearity}
+                    experienceLabel={mapping.experienceCol}
+                    onNavigateTab={handleSelectTab}
+                  />
+                )}
+
+                {activeTab === 'simulasi' && simulation && (
+                  <SimulasiTab
                     subsidyPct={subsidyPct}
                     loyaltyPct={loyaltyPct}
                     onChangeSubsidy={setSubsidyPct}
@@ -617,11 +630,9 @@ export default function App() {
                       showToast('Parameter simulasi direset', 'Subsidi dan bonus kembali ke 0%.', 'info');
                     }}
                     simulation={simulation}
-                    linearity={analysis.linearity}
                     candidateYears={candidateYears}
                     onChangeCandidateYears={setCandidateYears}
                     candidateOffer={candidateOffer}
-                    experienceLabel={mapping.experienceCol}
                     onNavigateTab={handleSelectTab}
                   />
                 )}

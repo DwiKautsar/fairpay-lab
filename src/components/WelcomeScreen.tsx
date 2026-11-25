@@ -24,9 +24,15 @@ const PILLARS = [
   },
   {
     index: '03',
-    title: 'Linearitas & Simulator Kebijakan',
+    title: 'Uji Linearitas Regresi',
     description:
-      'Mendeteksi titik jenuh karir melalui regresi linear vs kuadratik, mensimulasikan subsidi gaji bawah, dan mengestimasi rentang tawaran kandidat baru.',
+      'Mendeteksi titik jenuh karir melalui perbandingan regresi linear vs kuadratik dan uji F-Deviasi.',
+  },
+  {
+    index: '04',
+    title: 'Simulator Kebijakan & Tawaran',
+    description:
+      'Mensimulasikan subsidi gaji bawah, bonus loyalitas, serta rentang tawaran wajar kandidat baru.',
   },
 ];
 
@@ -154,7 +160,7 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
                   Alur Kerja Audit FairPay
                 </div>
                 <h2 className="mt-2 font-display text-[22px] sm:text-[24px] font-bold tracking-tight leading-[1.24] text-white [text-wrap:balance]">
-                  Tiga pilar diagnosis dalam satu ruang kerja terpadu.
+                  Empat modul audit dalam satu ruang kerja terpadu.
                 </h2>
 
                 <div className="mt-6 divide-y divide-white/14 border-t border-white/14">

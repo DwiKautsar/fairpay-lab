@@ -355,7 +355,7 @@ export function HomogenitasTab({
             onClick={() => onNavigateTab('linearitas')}
             className="inline-flex items-center gap-2 rounded-xl bg-[#EEF4FF] px-4 py-2 text-[13px] font-semibold text-[#1562FF] hover:bg-[#E0ECFF] transition-colors cursor-pointer"
           >
-            <span>Lanjut: Linearitas &amp; Simulator</span>
+            <span>Lanjut: Uji Linearitas (Regresi)</span>
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>

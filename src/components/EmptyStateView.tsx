@@ -30,10 +30,16 @@ const TAB_CONTEXT: Record<TabId, { kicker: string; title: string; subtitle: stri
       'Pilih atau unggah dataset terlebih dahulu untuk menjalankan Levene’s Test dan memvisualisasikan boxplot rentang upah.',
   },
   linearitas: {
-    kicker: 'UJI 03 · LABORATORIUM KEBIJAKAN',
+    kicker: 'UJI 03 · LINEARITAS REGRESI',
+    title: 'Siap menguji linearitas gaji & pengalaman.',
+    subtitle:
+      'Muat dataset terlebih dahulu untuk menghitung R² linear vs kuadratik, uji F-Deviasi, dan mendeteksi titik jenuh karir.',
+  },
+  simulasi: {
+    kicker: 'LABORATORIUM KEBIJAKAN',
     title: 'Simulator kebijakan menunggu dataset.',
     subtitle:
-      'Muat dataset terlebih dahulu untuk menjalankan simulasi subsidi gaji, bonus pengalaman, kalkulator tawaran, dan uji linearitas.',
+      'Muat dataset terlebih dahulu untuk menjalankan simulasi subsidi gaji, bonus pengalaman, dan kalkulator tawaran kandidat.',
   },
 };
 

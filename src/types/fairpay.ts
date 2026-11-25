@@ -1,4 +1,4 @@
-export type TabId = 'ringkasan' | 'normalitas' | 'homogenitas' | 'linearitas';
+export type TabId = 'ringkasan' | 'normalitas' | 'homogenitas' | 'linearitas' | 'simulasi';
 
 export type DatasetKey = 'none' | 'glassdoor' | 'employee_salary' | 'custom';
 

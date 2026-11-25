@@ -20,8 +20,12 @@ const TAB_LOADING_LABELS: Record<TabId, { title: string; subtitle: string }> = {
     subtitle: 'Menghitung perbandingan rentang upah dan varians antarkelompok...',
   },
   linearitas: {
+    title: 'Memuat Uji Linearitas',
+    subtitle: 'Menghitung regresi linear vs kuadratik, F-Deviasi, dan diagram pencar...',
+  },
+  simulasi: {
     title: 'Menyiapkan Laboratorium Simulasi',
-    subtitle: 'Memuat parameter kebijakan, garis regresi, dan kalkulator tawaran...',
+    subtitle: 'Memuat parameter kebijakan what-if dan kalkulator tawaran kandidat...',
   },
 };
 

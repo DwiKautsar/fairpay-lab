@@ -6,6 +6,7 @@ import {
   LayoutGrid,
   Scale,
   ShieldCheck,
+  SlidersHorizontal,
   TrendingUp,
   Upload,
   X,
@@ -38,7 +39,8 @@ const NAV_ITEMS: Array<{
   { id: 'ringkasan', label: 'Ringkasan', icon: LayoutGrid },
   { id: 'normalitas', label: 'Normalitas', icon: Activity },
   { id: 'homogenitas', label: 'Homogenitas', icon: Scale },
-  { id: 'linearitas', label: 'Linearitas & Simulasi', badge: 'LAB', icon: TrendingUp },
+  { id: 'linearitas', label: 'Linearitas', icon: TrendingUp },
+  { id: 'simulasi', label: 'Simulasi', badge: 'LAB', icon: SlidersHorizontal },
 ];
 
 export function Sidebar({
