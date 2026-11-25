@@ -68,7 +68,7 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
 
       {/* Main Editorial Hero */}
       <main className="relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 items-center px-5 pt-4 pb-12 sm:px-8 sm:pt-6 sm:pb-16 lg:px-10 lg:pt-4 lg:pb-14">
-        <div className="grid w-full grid-cols-1 gap-10 lg:grid-cols-[1.22fr_0.98fr] lg:gap-12 items-stretch">
+        <div className="grid w-full grid-cols-1 gap-10 lg:grid-cols-[1.08fr_1.04fr] lg:gap-11 items-stretch">
           {/* Left Column: Crisp Editorial Proposition + Single Primary CTA */}
           <div className="flex flex-col justify-center">
             <TypingHeading
@@ -163,30 +163,28 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
                   Empat modul audit dalam satu ruang kerja terpadu.
                 </h2>
 
-                <div className="mt-6 divide-y divide-white/14 border-t border-white/14">
+                <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {PILLARS.map((item, idx) => (
                     <motion.div
                       key={item.index}
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
                       transition={{
-                        duration: 0.4,
-                        delay: 0.24 + idx * 0.08,
+                        duration: 0.38,
+                        delay: 0.22 + idx * 0.06,
                         ease: [0.22, 1, 0.36, 1],
                       }}
-                      className="flex items-start gap-4 rounded-xl px-2 -mx-2 py-4.5 first:pt-4.5 last:pb-1 transition-colors duration-200 hover:bg-white/[0.05]"
+                      className="flex h-full flex-col rounded-2xl border border-white/[0.11] bg-white/[0.045] p-4 transition-colors duration-200 hover:border-white/[0.2] hover:bg-white/[0.08]"
                     >
-                      <span className="font-mono text-[12px] font-semibold text-[#93C5FD] mt-0.5 shrink-0 tabular-nums">
+                      <span className="font-mono text-[11.5px] font-semibold tracking-wider text-[#93C5FD] tabular-nums">
                         {item.index}
                       </span>
-                      <div>
-                        <h3 className="text-[14.5px] font-bold text-white leading-snug">
-                          {item.title}
-                        </h3>
-                        <p className="mt-1 text-[13px] leading-relaxed text-[#C7D7F8]">
-                          {item.description}
-                        </p>
-                      </div>
+                      <h3 className="mt-2 text-[14px] font-bold text-white leading-snug">
+                        {item.title}
+                      </h3>
+                      <p className="mt-1.5 text-[12.5px] leading-relaxed text-[#C7D7F8]">
+                        {item.description}
+                      </p>
                     </motion.div>
                   ))}
                 </div>
