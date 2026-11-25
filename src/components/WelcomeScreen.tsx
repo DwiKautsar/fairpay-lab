@@ -39,13 +39,13 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
       transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       className="fairpay-welcome-bg relative flex min-h-screen flex-col overflow-x-clip text-[#0F172A]"
     >
-      {/* FairPay Geometric Brand Pattern (subtle 5% opacity across full white-to-blue gradient) */}
+      {/* FairPay Geometric Brand Pattern (subtle 4% opacity across full white-to-blue gradient) */}
       <img
         src="/assets/aistudio/pattern-fairpay_ce12d3c6.svg"
         alt=""
         aria-hidden="true"
         decoding="async"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-[0.05] select-none"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center opacity-[0.04] select-none"
       />
 
       {/* Seamless Top Bar (Blends directly into top-white canvas with zero hard crop edge) */}
