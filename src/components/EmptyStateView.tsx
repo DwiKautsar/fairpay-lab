@@ -58,8 +58,8 @@ export function EmptyStateView({
         <TypingHeading
           key={ctx.title}
           text={ctx.title}
-          speedMs={44}
-          delayMs={200}
+          speedMs={52}
+          delayMs={180}
           className="mt-2 text-[26px] sm:text-[32px] font-bold tracking-[-0.02em] leading-[1.16] text-[#0B1221] [text-wrap:balance]"
         />
         <RevealUp delay={0.12} y={10}>

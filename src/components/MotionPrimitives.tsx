@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 interface TypingHeadingProps {
   text: string;
   className?: string;
-  /** Milliseconds per character (clear, smooth typewriter cadence) */
+  /** Milliseconds per character (clear, natural typewriter cadence) */
   speedMs?: number;
   /** Optional start delay in ms */
   delayMs?: number;
@@ -15,25 +15,19 @@ interface TypingHeadingProps {
 /**
  * Accessible, zero-layout-shift typing animation for section H1 headings.
  * Pre-reserves exact final height via an invisible mirror so content below never jumps.
+ * Always runs the typing reveal (non-vestibular text reveal) even when OS reduced-motion is enabled.
  */
 export function TypingHeading({
   text,
   className = '',
-  speedMs = 40,
+  speedMs = 48,
   delayMs = 160,
   start = true,
 }: TypingHeadingProps) {
-  const prefersReduced = useReducedMotion();
-  const [visibleCount, setVisibleCount] = useState(() => (prefersReduced ? text.length : 0));
+  const [visibleCount, setVisibleCount] = useState(0);
   const [showCaret, setShowCaret] = useState(false);
 
   useEffect(() => {
-    if (prefersReduced) {
-      setVisibleCount(text.length);
-      setShowCaret(false);
-      return;
-    }
-
     if (!start) {
       setVisibleCount(0);
       setShowCaret(false);
@@ -43,32 +37,44 @@ export function TypingHeading({
     setVisibleCount(0);
     setShowCaret(true);
 
-    let intervalId: number | null = null;
+    let cancelled = false;
+    let stepTimer: number | null = null;
     let hideCaretTimer: number | null = null;
 
-    const startTimer = window.setTimeout(() => {
-      let current = 0;
-      intervalId = window.setInterval(() => {
-        current += 1;
-        setVisibleCount(current);
-        if (current >= text.length) {
-          if (intervalId !== null) {
-            window.clearInterval(intervalId);
-            intervalId = null;
-          }
-          hideCaretTimer = window.setTimeout(() => {
-            setShowCaret(false);
-          }, 750);
-        }
-      }, speedMs);
-    }, delayMs);
+    let current = 0;
+
+    const typeNext = () => {
+      if (cancelled) return;
+      current += 1;
+      setVisibleCount(current);
+
+      if (current >= text.length) {
+        hideCaretTimer = window.setTimeout(() => {
+          if (!cancelled) setShowCaret(false);
+        }, 900);
+        return;
+      }
+
+      const prevChar = text[current - 1];
+      // Slight natural pause on punctuation so it feels genuinely typed
+      const nextDelay =
+        prevChar === ',' || prevChar === '.' || prevChar === '?'
+          ? speedMs * 3.2
+          : prevChar === ' '
+            ? speedMs * 1.15
+            : speedMs;
+
+      stepTimer = window.setTimeout(typeNext, nextDelay);
+    };
+
+    stepTimer = window.setTimeout(typeNext, delayMs);
 
     return () => {
-      window.clearTimeout(startTimer);
-      if (intervalId !== null) window.clearInterval(intervalId);
+      cancelled = true;
+      if (stepTimer !== null) window.clearTimeout(stepTimer);
       if (hideCaretTimer !== null) window.clearTimeout(hideCaretTimer);
     };
-  }, [text, speedMs, delayMs, start, prefersReduced]);
+  }, [text, speedMs, delayMs, start]);
 
   return (
     <h1 className={`relative ${className}`} aria-label={text}>
@@ -81,12 +87,7 @@ export function TypingHeading({
       <span aria-hidden="true" className="absolute inset-0 block">
         {text.slice(0, visibleCount)}
         {showCaret && (
-          <motion.span
-            initial={{ opacity: 1 }}
-            animate={{ opacity: [1, 0, 1] }}
-            transition={{ duration: 0.72, repeat: Infinity, ease: 'easeInOut' }}
-            className="ml-0.5 inline-block h-[0.86em] w-[2.5px] translate-y-[0.08em] rounded-full bg-[#1562FF]"
-          />
+          <span className="fairpay-typing-caret ml-0.5 inline-block h-[0.86em] w-[2.5px] translate-y-[0.08em] rounded-full bg-[#1562FF]" />
         )}
       </span>
     </h1>
@@ -104,6 +105,7 @@ interface RevealUpProps {
 
 /**
  * Smooth spring bounce-up reveal for cards, KPI strips, and chart sections.
+ * Uses a gentler amplitude if OS prefers-reduced-motion is enabled instead of disabling entirely.
  */
 export function RevealUp({
   children,
@@ -113,23 +115,26 @@ export function RevealUp({
   inView = false,
 }: RevealUpProps) {
   const prefersReduced = useReducedMotion();
+  const offsetY = prefersReduced ? Math.min(8, y) : y;
 
-  if (prefersReduced) {
-    return <div className={className}>{children}</div>;
-  }
-
-  const transition = {
-    type: 'spring' as const,
-    stiffness: 320,
-    damping: 26,
-    mass: 0.85,
-    delay,
-  };
+  const transition = prefersReduced
+    ? {
+        duration: 0.28,
+        ease: [0.22, 1, 0.36, 1] as const,
+        delay: Math.min(delay, 0.12),
+      }
+    : {
+        type: 'spring' as const,
+        stiffness: 320,
+        damping: 26,
+        mass: 0.85,
+        delay,
+      };
 
   if (inView) {
     return (
       <motion.div
-        initial={{ opacity: 0, y, scale: 0.988 }}
+        initial={{ opacity: 0, y: offsetY, scale: prefersReduced ? 1 : 0.988 }}
         whileInView={{ opacity: 1, y: 0, scale: 1 }}
         viewport={{ once: true, amount: 'some' }}
         transition={transition}
@@ -142,7 +147,7 @@ export function RevealUp({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y, scale: 0.988 }}
+      initial={{ opacity: 0, y: offsetY, scale: prefersReduced ? 1 : 0.988 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={transition}
       className={className}

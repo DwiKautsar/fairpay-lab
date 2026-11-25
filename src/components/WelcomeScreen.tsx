@@ -73,7 +73,7 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
             <TypingHeading
               text="Uji keadilan struktur gaji secara objektif, bukan asumsi."
               start={isReady}
-              speedMs={34}
+              speedMs={38}
               delayMs={180}
               className="mt-4 font-display text-[32px] sm:text-[42px] lg:text-[48px] font-bold tracking-[-0.025em] leading-[1.12] text-[#0B1221] [text-wrap:balance]"
             />
