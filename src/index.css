@@ -180,6 +180,22 @@ input[type="range"].fairpay-slider::-moz-range-thumb {
     linear-gradient(180deg, #0D2E87 0%, #0C2B7E 56%, #092269 100%);
 }
 
+/* Seamless top-white to luminous FairPay blue bottom gradient for Welcome Screen (zero blur cost) */
+.fairpay-welcome-bg {
+  background-color: #FFFFFF;
+  background-image:
+    radial-gradient(62% 48% at 86% 98%, rgba(21, 98, 255, 0.22) 0%, rgba(59, 130, 246, 0.095) 44%, rgba(255, 255, 255, 0) 76%),
+    radial-gradient(56% 46% at 12% 100%, rgba(12, 43, 126, 0.13) 0%, rgba(37, 99, 235, 0.075) 42%, rgba(255, 255, 255, 0) 74%),
+    radial-gradient(50% 34% at 50% 90%, rgba(147, 197, 253, 0.24) 0%, rgba(255, 255, 255, 0) 72%),
+    linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 24%, #F7FAFF 54%, #E8F1FF 82%, #D9E9FF 100%);
+}
+
+/* Clean minimal canvas for Dashboard Workspace */
+.fairpay-dashboard-bg {
+  background-color: #F7FAFF;
+  background-image: linear-gradient(135deg, #F2F6FE 0%, #F9FBFF 50%, #FFFFFF 100%);
+}
+
 /* Subtle, smooth, UX-friendly card micro-interactions */
 .fairpay-card {
   transition:

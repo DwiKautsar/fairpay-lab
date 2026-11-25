@@ -37,14 +37,136 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -8, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
       transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-      className="flex min-h-screen flex-col bg-gradient-to-br from-[#F4F7FE] via-[#FAFBFD] to-[#FFFFFF] text-[#0F172A]"
+      className="fairpay-welcome-bg relative flex min-h-screen flex-col overflow-x-clip text-[#0F172A]"
     >
-      {/* Minimalist Top Bar */}
-      <header className="w-full border-b border-[#E7EDF8] bg-white/95">
-        <div className="mx-auto flex h-16 w-full max-w-[1240px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-10">
+      {/* Bespoke FairPay Geometric Brand Pattern (Adapted from uploaded 16:9 SVG with transparent masked cutouts) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1920 1080"
+          preserveAspectRatio="xMaxYMid slice"
+          className="h-full w-full"
+          fill="none"
+        >
+          <defs>
+            <pattern id="fpWelcomeDotGrid" width="34" height="34" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="1.65" fill="#94B3E8" opacity="0.52" />
+            </pattern>
+            <pattern id="fpWelcomeFineGrid" width="96" height="96" patternUnits="userSpaceOnUse">
+              <path d="M96 0H0V96" fill="none" stroke="#B6CCEE" strokeWidth="1" opacity="0.38" />
+            </pattern>
+            <clipPath id="fpWelcomeRightField">
+              <path d="M1050 0H1920V1080H1050Z" />
+            </clipPath>
+            {/* True transparent cutouts so the top-white to bottom-blue gradient flows cleanly through every aperture */}
+            <mask id="fpCapsuleCutout">
+              <rect x="0" y="0" width="610" height="174" fill="white" />
+              <rect x="38" y="38" width="534" height="98" rx="49" fill="black" />
+              <path d="M430 38H523C550 38 572 60 572 87S550 136 523 136H430Z" fill="white" />
+              <circle cx="430" cy="87" r="49" fill="white" />
+              <circle cx="430" cy="87" r="24" fill="black" />
+            </mask>
+            <mask id="fpChannelCutout">
+              <rect x="0" y="0" width="309" height="264" fill="white" />
+              <rect x="54" y="98" width="255" height="68" rx="34" fill="black" />
+              <circle cx="54" cy="132" r="34" fill="white" />
+              <circle cx="54" cy="132" r="13" fill="black" />
+            </mask>
+            <mask id="fpBottomRingCutout">
+              <rect x="1380" y="600" width="540" height="480" fill="white" />
+              <circle cx="1645" cy="864" r="119" fill="black" />
+            </mask>
+          </defs>
+
+          {/* Right-side Architectural Field */}
+          <g clipPath="url(#fpWelcomeRightField)">
+            {/* Subtle Halo Circle + Concentric Guides + Micro Grid */}
+            <circle cx="1585" cy="520" r="490" fill="#1562FF" fillOpacity="0.032" />
+            <circle cx="1590" cy="520" r="405" stroke="#1562FF" strokeOpacity="0.1" strokeWidth="1.8" />
+            <circle
+              cx="1590"
+              cy="520"
+              r="330"
+              stroke="#0B2F79"
+              strokeOpacity="0.09"
+              strokeWidth="1.8"
+              strokeDasharray="3 12"
+            />
+            <rect x="1080" y="0" width="840" height="1080" fill="url(#fpWelcomeDotGrid)" opacity="0.52" />
+            <rect x="1090" y="0" width="830" height="1080" fill="url(#fpWelcomeFineGrid)" opacity="0.34" />
+
+            {/* Softly Calibrated Oversized FairPay Geometric Motifs (framing top-right, right & bottom-right) */}
+            <g opacity="0.14">
+              {/* Top Horizontal Capsule with Precision Toggle Inset */}
+              <g transform="translate(1195 72)" mask="url(#fpCapsuleCutout)">
+                <rect x="0" y="0" width="610" height="174" rx="87" fill="#0B2F79" />
+                <path d="M430 38H523C550 38 572 60 572 87S550 136 523 136H430Z" fill="#1055ED" />
+                <circle cx="430" cy="87" r="49" fill="#0B2F79" />
+              </g>
+
+              {/* Central Ring & Node */}
+              <g>
+                <circle cx="1605" cy="485" r="186" stroke="#1055ED" strokeWidth="82" />
+                <circle cx="1424" cy="485" r="43" fill="#0B2F79" />
+                <path
+                  d="M1605 299A186 186 0 0 1 1791 485"
+                  stroke="#0B2F79"
+                  strokeWidth="82"
+                  strokeLinecap="butt"
+                />
+                <circle cx="1791" cy="485" r="42" fill="#0B2F79" />
+              </g>
+
+              {/* Rounded Block with Cut-Through Channel */}
+              <g transform="translate(1166 390)" mask="url(#fpChannelCutout)">
+                <path
+                  d="M0 34Q0 0 34 0H275Q309 0 309 34V230Q309 264 275 264H34Q0 264 0 230Z"
+                  fill="#1055ED"
+                />
+                <path d="M0 132H309" stroke="#0B2F79" strokeWidth="20" />
+                <circle cx="54" cy="132" r="34" fill="#0B2F79" />
+              </g>
+
+              {/* Bottom-Right Cropped Ring */}
+              <g mask="url(#fpBottomRingCutout)">
+                <circle cx="1645" cy="864" r="205" fill="#0B2F79" />
+                <path d="M1645 659A205 205 0 0 1 1850 864" stroke="#1055ED" strokeWidth="86" />
+                <circle cx="1645" cy="659" r="43" fill="#1055ED" />
+              </g>
+            </g>
+
+            {/* Analytical Alignment Node Dots */}
+            <g fill="#0B2F79" opacity="0.28">
+              <circle cx="1215" cy="312" r="6.5" />
+              <circle cx="1248" cy="312" r="6.5" />
+              <circle cx="1281" cy="312" r="6.5" />
+              <circle cx="1848" cy="298" r="6.5" />
+              <circle cx="1880" cy="298" r="6.5" />
+            </g>
+          </g>
+
+          {/* Restrained Vertical Boundary Accent separating quiet left content space from geometric motif */}
+          <path
+            d="M1076 130V950"
+            stroke="#1562FF"
+            strokeOpacity="0.14"
+            strokeWidth="1.75"
+            strokeDasharray="4 14"
+          />
+          <circle cx="1076" cy="130" r="4.5" fill="#1055ED" fillOpacity="0.48" />
+          <circle cx="1076" cy="950" r="4.5" fill="#0B2F79" fillOpacity="0.45" />
+        </svg>
+      </div>
+
+      {/* Seamless Top Bar (Blends directly into top-white canvas with zero hard crop edge) */}
+      <header className="relative z-10 w-full bg-transparent">
+        <div className="mx-auto flex h-20 w-full max-w-[1240px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-10">
           <div className="flex items-center gap-3 shrink-0">
-            <BrandLogo variant="color" className="h-[28px] w-[36px] shrink-0" />
-            <span className="font-display text-[19px] font-bold tracking-tight text-[#0B1221] whitespace-nowrap">
+            <BrandLogo variant="color" className="h-[29px] w-[37px] shrink-0" />
+            <span className="font-display text-[19.5px] font-bold tracking-tight text-[#0B1221] whitespace-nowrap">
               FairPay
             </span>
           </div>
@@ -52,22 +174,18 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
       </header>
 
       {/* Main Editorial Hero */}
-      <main className="mx-auto flex w-full max-w-[1240px] flex-1 items-center px-5 py-10 sm:px-8 sm:py-14 lg:px-10 lg:py-12">
+      <main className="relative z-10 mx-auto flex w-full max-w-[1240px] flex-1 items-center px-5 pt-4 pb-12 sm:px-8 sm:pt-6 sm:pb-16 lg:px-10 lg:pt-4 lg:pb-14">
         <div className="grid w-full grid-cols-1 gap-10 lg:grid-cols-[1.22fr_0.98fr] lg:gap-12 items-stretch">
           {/* Left Column: Crisp Editorial Proposition + Single Primary CTA */}
           <div className="flex flex-col justify-center">
-            <RevealUp delay={0.02} y={10}>
-              <div className="text-[12.5px] font-semibold tracking-wide text-[#1562FF]">
-                Audit Keadilan Kompensasi Berbasis Statistika
-              </div>
-            </RevealUp>
-
             <TypingHeading
               text="Uji keadilan struktur gaji secara objektif, bukan asumsi."
+              highlightPhrase="secara objektif"
+              highlightClassName="text-[#1562FF]"
               start={isReady}
               speedMs={38}
               delayMs={180}
-              className="mt-4 font-display text-[32px] sm:text-[42px] lg:text-[48px] font-bold tracking-[-0.025em] leading-[1.12] text-[#0B1221] [text-wrap:balance]"
+              className="font-display text-[32px] sm:text-[42px] lg:text-[48px] font-bold tracking-[-0.025em] leading-[1.12] text-[#0B1221] [text-wrap:balance]"
             />
 
             <RevealUp delay={0.14} y={14}>
@@ -88,13 +206,13 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: 'spring', stiffness: 420, damping: 28 }}
-                className="group inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#1562FF] px-7 py-3.5 text-[14.5px] font-semibold text-white shadow-[0_10px_26px_rgba(21,98,255,0.28)] transition-colors duration-200 hover:bg-[#0E51DB] hover:shadow-[0_14px_32px_rgba(21,98,255,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2 whitespace-nowrap cursor-pointer"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-xl bg-[#1562FF] px-7 py-3.5 text-[14.5px] font-semibold text-white shadow-[0_12px_28px_rgba(21,98,255,0.28)] transition-colors duration-200 hover:bg-[#0E51DB] hover:shadow-[0_16px_34px_rgba(21,98,255,0.36)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] focus-visible:ring-offset-2 whitespace-nowrap cursor-pointer"
               >
                 <span>Buka Dashboard Audit</span>
                 <ArrowRight className="h-4.5 w-4.5 transition-transform duration-200 group-hover:translate-x-1" />
               </motion.button>
 
-              <p className="text-[12.5px] text-[#64748B]">
+              <p className="text-[12.5px] text-[#5B6B84]">
                 Mendukung impor CSV/Excel, 2 dataset publik bawaan, dan ekspor laporan berdiagram.
               </p>
             </RevealUp>
@@ -103,13 +221,13 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
             <RevealUp
               delay={0.3}
               y={16}
-              className="mt-9 grid grid-cols-3 gap-4 border-t border-[#E6EDF8] pt-6 max-w-lg"
+              className="mt-9 grid grid-cols-3 gap-4 border-t border-[#0C2B7E]/10 pt-6 max-w-lg"
             >
               <div>
                 <div className="font-mono text-[20px] sm:text-[22px] font-bold text-[#0C2B7E] tabular-nums">
                   3 Uji
                 </div>
-                <div className="mt-0.5 text-[12px] text-[#64748B]">
+                <div className="mt-0.5 text-[12px] text-[#5B6B84]">
                   Normalitas, Levene &amp; Regresi
                 </div>
               </div>
@@ -117,7 +235,7 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
                 <div className="font-mono text-[20px] sm:text-[22px] font-bold text-[#0C2B7E] tabular-nums">
                   α = 0,05
                 </div>
-                <div className="mt-0.5 text-[12px] text-[#64748B]">
+                <div className="mt-0.5 text-[12px] text-[#5B6B84]">
                   Ambang signifikansi baku
                 </div>
               </div>
@@ -125,7 +243,7 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
                 <div className="font-mono text-[20px] sm:text-[22px] font-bold text-[#0C2B7E] tabular-nums">
                   100%
                 </div>
-                <div className="mt-0.5 text-[12px] text-[#64748B]">
+                <div className="mt-0.5 text-[12px] text-[#5B6B84]">
                   Simulasi aman di memori
                 </div>
               </div>
@@ -136,9 +254,9 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
           <RevealUp delay={0.16} y={22} className="flex">
             <section
               aria-label="Ringkasan kapabilitas FairPay"
-              className="fairpay-sidebar-mesh fairpay-card-navy relative flex w-full flex-col justify-between overflow-hidden rounded-[22px] border border-white/[0.12] p-7 sm:p-8 text-white shadow-[0_18px_46px_-12px_rgba(12,43,126,0.28),inset_0_1px_0_rgba(255,255,255,0.2)]"
+              className="fairpay-sidebar-mesh fairpay-card-navy relative flex w-full flex-col justify-between overflow-hidden rounded-[24px] border border-white/[0.14] p-7 sm:p-8 text-white shadow-[0_22px_52px_-14px_rgba(12,43,126,0.32),0_4px_12px_rgba(12,43,126,0.12),inset_0_1px_0_rgba(255,255,255,0.22)]"
             >
-              {/* Subtle Architectural Ring Motif */}
+              {/* Single Clean Architectural Ring Motif */}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute -top-20 -right-16 h-56 w-56 rounded-full border-[28px] border-white/[0.07]"
@@ -190,7 +308,7 @@ export function WelcomeScreen({ isReady = true, onEnterDashboard }: WelcomeScree
         </div>
       </main>
 
-      <AppFooter />
+      <AppFooter variant="welcome" />
     </motion.div>
   );
 }

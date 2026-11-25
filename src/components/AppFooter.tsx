@@ -31,7 +31,11 @@ const LECTURER = {
   course: 'Probabilitas dan Statistika',
 };
 
-export function AppFooter() {
+interface AppFooterProps {
+  variant?: 'welcome' | 'dashboard';
+}
+
+export function AppFooter({ variant = 'welcome' }: AppFooterProps) {
   const triggerRef = useRef<HTMLButtonElement>(null);
   const popoverRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<number | null>(null);
@@ -199,36 +203,52 @@ export function AppFooter() {
     </div>
   );
 
-  return (
-    <footer className="mt-auto border-t border-[#E6EDF8]/80 bg-white/85 px-4 py-4 sm:px-6 lg:px-5 xl:px-7">
-      <div className="mx-auto flex w-full max-w-[1520px] flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
-        <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[#64748B] sm:justify-start">
-          <span>&copy; 2026</span>
-          <strong className="font-semibold text-[#0F172A]">Kelompok Gemini Stats 5A</strong>
-          <span>&middot; FairPay HR Equity Auditor</span>
-          <button
-            ref={triggerRef}
-            type="button"
-            onClick={handleClick}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-            aria-label="Lihat nama pengembang dan dosen pengampu Kelompok Gemini Stats 5A"
-            aria-expanded={open}
-            title="Informasi Pengembang & Dosen Pengampu"
-            className={`ml-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] ${
-              open
-                ? 'bg-[#1562FF] text-white'
-                : 'bg-[#E8F0FF] text-[#1562FF] hover:bg-[#1562FF] hover:text-white'
-            }`}
-          >
-            <CircleAlert className="h-3.5 w-3.5" strokeWidth={2.2} />
-          </button>
-        </div>
-
-        <div className="font-mono text-[11px] text-[#94A3B8]">
-          Probabilitas &amp; Statistika
-        </div>
+  const footerInner = (
+    <div className="flex w-full flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 text-[12.5px] text-[#64748B] sm:justify-start">
+        <span>&copy; 2026</span>
+        <strong className="font-semibold text-[#0F172A]">Kelompok Gemini Stats 5A</strong>
+        <span>&middot; FairPay HR Equity Auditor</span>
+        <button
+          ref={triggerRef}
+          type="button"
+          onClick={handleClick}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          aria-label="Lihat nama pengembang dan dosen pengampu Kelompok Gemini Stats 5A"
+          aria-expanded={open}
+          title="Informasi Pengembang & Dosen Pengampu"
+          className={`ml-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1562FF] ${
+            open
+              ? 'bg-[#1562FF] text-white'
+              : 'bg-[#E8F0FF] text-[#1562FF] hover:bg-[#1562FF] hover:text-white'
+          }`}
+        >
+          <CircleAlert className="h-3.5 w-3.5" strokeWidth={2.2} />
+        </button>
       </div>
+
+      <div className="font-mono text-[11px] text-[#64748B]/90">
+        Probabilitas &amp; Statistika
+      </div>
+    </div>
+  );
+
+  return (
+    <footer
+      className={
+        variant === 'dashboard'
+          ? 'mt-auto w-full lg:px-5 xl:px-7 lg:pb-3.5 lg:pt-1'
+          : 'relative z-10 mt-auto border-t border-[#0C2B7E]/[0.08] bg-white/45 px-5 py-4 sm:px-8 lg:px-10'
+      }
+    >
+      {variant === 'dashboard' ? (
+        <div className="mx-auto w-full max-w-[1520px] border-t border-[#E7EDF8] bg-white/92 px-4 py-3.5 sm:px-6 lg:rounded-[18px] lg:border lg:border-white/90 lg:bg-white/88 lg:px-6 lg:py-3.5 lg:backdrop-blur-md lg:shadow-[0_10px_28px_-10px_rgba(12,43,126,0.08),0_2px_6px_rgba(12,43,126,0.035),inset_0_1px_0_rgba(255,255,255,0.95)] lg:ring-1 lg:ring-[#DCE6F7]/75">
+          {footerInner}
+        </div>
+      ) : (
+        <div className="mx-auto w-full max-w-[1240px]">{footerInner}</div>
+      )}
 
       {open &&
         typeof document !== 'undefined' &&

@@ -460,7 +460,7 @@ export default function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-            className="flex min-h-screen bg-gradient-to-br from-[#F2F6FE] via-[#F9FBFF] to-[#FFFFFF] text-[#0F172A]"
+            className="fairpay-dashboard-bg flex min-h-screen text-[#0F172A]"
           >
             {/* Left Navigation Sidebar */}
             <Sidebar
@@ -630,7 +630,7 @@ export default function App() {
           )}
         </main>
 
-              <AppFooter />
+              <AppFooter variant="dashboard" />
             </div>
           </motion.div>
         )}

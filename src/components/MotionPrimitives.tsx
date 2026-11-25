@@ -4,6 +4,10 @@ import { motion, useReducedMotion } from 'motion/react';
 interface TypingHeadingProps {
   text: string;
   className?: string;
+  /** Optional substring inside `text` to highlight in an accent color */
+  highlightPhrase?: string;
+  /** Accent class for the highlighted substring (default: FairPay cobalt blue) */
+  highlightClassName?: string;
   /** Milliseconds per character (clear, natural typewriter cadence) */
   speedMs?: number;
   /** Optional start delay in ms */
@@ -14,12 +18,14 @@ interface TypingHeadingProps {
 
 /**
  * Accessible, zero-layout-shift typing animation for section H1 headings.
- * Pre-reserves exact final height via an invisible mirror so content below never jumps.
- * Always runs the typing reveal (non-vestibular text reveal) even when OS reduced-motion is enabled.
+ * Uses a single inline text flow with invisible trailing remainder so lines never wrap or jump mid-typing.
+ * Supports optional accent phrase highlighting without altering glyph metrics.
  */
 export function TypingHeading({
   text,
   className = '',
+  highlightPhrase,
+  highlightClassName = 'text-[#1562FF]',
   speedMs = 48,
   delayMs = 160,
   start = true,
@@ -76,12 +82,38 @@ export function TypingHeading({
     };
   }, [text, speedMs, delayMs, start]);
 
+  const hlStart =
+    highlightPhrase && highlightPhrase.length > 0 ? text.indexOf(highlightPhrase) : -1;
+  const hlEnd = hlStart >= 0 && highlightPhrase ? hlStart + highlightPhrase.length : -1;
+
+  const renderRange = (from: number, to: number) => {
+    if (to <= from) return null;
+    if (hlStart < 0 || to <= hlStart || from >= hlEnd) {
+      return text.slice(from, to);
+    }
+    const seg1End = Math.min(to, hlStart);
+    const seg2Start = Math.max(from, hlStart);
+    const seg2End = Math.min(to, hlEnd);
+    const seg3Start = Math.max(from, hlEnd);
+    return (
+      <>
+        {seg1End > from && text.slice(from, seg1End)}
+        {seg2End > seg2Start && (
+          <span className={highlightClassName}>{text.slice(seg2Start, seg2End)}</span>
+        )}
+        {to > seg3Start && text.slice(seg3Start, to)}
+      </>
+    );
+  };
+
   const isComplete = visibleCount >= text.length;
+  const activeIdx = visibleCount - 1;
+  const isActiveHighlighted = hlStart >= 0 && activeIdx >= hlStart && activeIdx < hlEnd;
 
   return (
     <h1 className={className} aria-label={text}>
       {isComplete && !showCaret ? (
-        text
+        renderRange(0, text.length)
       ) : (
         <span aria-hidden="true">
           {visibleCount === 0 ? (
@@ -96,9 +128,9 @@ export function TypingHeading({
             </>
           ) : (
             <>
-              {visibleCount > 1 && <span>{text.slice(0, visibleCount - 1)}</span>}
-              <span className="relative">
-                {text[visibleCount - 1]}
+              {visibleCount > 1 && <span>{renderRange(0, visibleCount - 1)}</span>}
+              <span className={`relative ${isActiveHighlighted ? highlightClassName : ''}`}>
+                {text[activeIdx]}
                 {showCaret && (
                   <span className="fairpay-typing-caret pointer-events-none absolute -right-[2px] top-[0.1em] h-[0.86em] w-[2.5px] rounded-full bg-[#1562FF]" />
                 )}
